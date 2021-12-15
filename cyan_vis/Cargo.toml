@@ -1,0 +1,8 @@
+[package]
+name = "cyan_vis"
+version = "0.0.1"
+edition = "2021"
+license = "GPL-3.0-or-later"
+authors = ["CK Vattes <cvatte1@wgu.edu>"]
+
+[dependencies]
