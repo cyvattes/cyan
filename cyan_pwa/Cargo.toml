@@ -9,4 +9,5 @@ authors = ["CK Vattes <cvatte1@wgu.edu>"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+cyan_nlg = {path = "../cyan_nlg"}
 eframe = "0.14.0"

@@ -6,3 +6,5 @@ license = "GPL-3.0-or-later"
 authors = ["CK Vattes <cvatte1@wgu.edu>"]
 
 [dependencies]
+rust-bert = "0.16.0"
+tokenizers = "0.11.0"
