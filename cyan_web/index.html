@@ -20,14 +20,14 @@
 </head>
 
 <body>
-<canvas id="app"></canvas>
+    <canvas id="pwa"></canvas>
 
-<script src="cyan_pwa.js"></script>
-<script>
-    wasm_bindgen("./cyan_pwa_bg.wasm").then(on_wasm_loaded).catch(console.error);
-    function on_wasm_loaded() {
-        wasm_bindgen.run("app");
-    }
-</script>
+    <script src="cyan_pwa.js"></script>
+    <script>
+        wasm_bindgen("./cyan_pwa_bg.wasm").then(on_wasm_loaded).catch(console.error);
+        function on_wasm_loaded() {
+            wasm_bindgen.run("pwa");
+        }
+    </script>
 </body>
 </html>
