@@ -1,7 +1,7 @@
 #!/bin/zsh
 set -eu
 
-rustup target add wasm32-unknown-unknown
+rustup target add wasm32-wasi
 cargo install -f wasm-bindgen-cli
 cargo update -p wasm-bindgen
 

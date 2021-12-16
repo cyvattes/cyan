@@ -600,6 +600,7 @@ version = "0.0.1"
 dependencies = [
  "cyan_nlg",
  "eframe",
+ "rust-bert",
 ]
 
 [[package]]

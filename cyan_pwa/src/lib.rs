@@ -30,6 +30,7 @@ impl App for PWA {
         CentralPanel::default().show(ctx, |ui| {
             ScrollArea::auto_sized().show(ui, |ui| {
                 self.render_title(ui);
+                self.render_body(ui);
             });
         });
     }

@@ -1,4 +1,5 @@
 use eframe::egui::{Color32, CtxRef, Direction, FontDefinitions, FontFamily, Layout, Separator, TextStyle, Ui, Vec2};
+use cyan_nlg;
 
 const WHITE: Color32 = Color32::from_rgb(255, 255, 255);
 
@@ -39,5 +40,13 @@ impl PWA {
             ui.colored_label(WHITE, title);
         });
         ui.add(Separator::default());
+    }
+
+    pub fn render_body(&self, ui: &mut Ui) {
+        let body: String = cyan_nlg::run_short().join(" ");
+        // ui.label(body);
+        ui.with_layout(Layout::left_to_right(), |ui| {
+            ui.label(body);
+        });
     }
 }

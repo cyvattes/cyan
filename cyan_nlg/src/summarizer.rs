@@ -1,9 +1,9 @@
 use rust_bert::pipelines::summarization::SummarizationModel;
 
-pub fn summarize(text: &str) {
+pub fn summarize(text: &str) -> Vec<String> {
     let s = SummarizationModel::new(
         Default::default(),
     ).unwrap();
 
-    println!("{:?}", s.summarize([text]));
+    s.summarize([text])
 }
