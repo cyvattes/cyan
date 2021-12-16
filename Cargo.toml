@@ -5,3 +5,6 @@ members = [
     "cyan_vis",
     "cyan_fs2",
 ]
+
+[patch.crates-io]
+fs2 = { path = "cyan_fs2" } # Fork fs2 to fix target_family id error
