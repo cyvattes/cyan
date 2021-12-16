@@ -3,4 +3,5 @@ members = [
     "cyan_nlg",
     "cyan_pwa",
     "cyan_vis",
+    "cyan_fs2",
 ]

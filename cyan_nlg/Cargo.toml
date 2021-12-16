@@ -7,4 +7,9 @@ authors = ["CK Vattes <cvatte1@wgu.edu>"]
 
 [dependencies]
 rust-bert = "0.16.0"
-tokenizers = "0.11.0"
+#rust-bert = "0.7.12"
+#tokenizers = "0.11.0"
+
+[patch.crates-io]
+getrandom = { version = "0.2.3", features = ["js"] } # Use js feature for wasm32 target
+fs2 = { version = "0.4.3", path = "cyan_fs2" } # Fork fs2 to fix target_family id error
