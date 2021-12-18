@@ -1,3 +1,4 @@
+use actix_files::Files;
 use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use cyan_nlg;
 use std::io::Result;
@@ -5,10 +6,15 @@ use std::io::Result;
 pub(crate) async fn run_actix() -> Result<()> {
     let host = "127.0.0.1";
     let port = "51440";
-    println!("Server running at http://{}:{}", host, port);
+    println!("Service running at http://{}:{}", host, port);
     HttpServer::new(|| {
         App::new()
-            .service(index)
+            // .service(index)
+            .service(Files::new(
+                "/",
+                "cyan_api/web/")
+                .index_file("templates/index.html")
+            )
             .service(summarize)
             .service(tokenize)
     })
@@ -17,10 +23,10 @@ pub(crate) async fn run_actix() -> Result<()> {
         .await
 }
 
-#[get("/")]
-async fn index() -> impl Responder {
-    HttpResponse::Ok().body("Root")
-}
+// #[get("/")]
+// async fn index() -> impl Responder {
+//     HttpResponse::Ok().body("Root")
+// }
 
 #[get("/summarize")]
 async fn summarize() -> impl Responder {

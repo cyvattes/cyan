@@ -1,4 +1,3 @@
-#Cyan Text Abstraction Tool
+# Cyan Text Abstraction Tool
 
-###CK Vattes
-###(ID # Here)
+### CK Vattes (# 001237324)
