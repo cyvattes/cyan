@@ -1,13 +1,10 @@
 [package]
-name = "cyan_pwa"
+name = "cyan_api"
 version = "0.0.1"
 edition = "2021"
 license = "GPL-3.0-or-later"
 authors = ["CK Vattes <cvatte1@wgu.edu>"]
 
-[lib]
-crate-type = ["cdylib", "rlib"]
-
 [dependencies]
 cyan_nlg = { path = "../cyan_nlg" }
-eframe = "0.14.0"
+rocket = "0.5.0-rc.1"

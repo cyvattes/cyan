@@ -1,10 +1,6 @@
 [workspace]
 members = [
+    "cyan_api",
     "cyan_nlg",
-    "cyan_pwa",
     "cyan_vis",
-    "cyan_fs2",
 ]
-
-[patch.crates-io]
-fs2 = { path = "cyan_fs2" } # Fork fs2 to fix target_family id error
