@@ -1,10 +1,9 @@
 mod server;
 
-#[macro_use]
-extern crate rocket;
-use rocket::Build;
+use actix_web;
+use std::io::Result;
 
-#[launch]
-fn launch() -> rocket::Rocket<Build> {
-    server::run()
+#[actix_web::main]
+async fn main() -> Result<()> {
+    server::run_actix().await
 }
