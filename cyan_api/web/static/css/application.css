@@ -27,6 +27,16 @@ body {
     text-align: center;
 }
 
+header {
+    position: relative;
+    display: block;
+}
+
+section {
+    position: relative;
+    display: block;
+}
+
 h1, h2, h3 {
     margin: 0.25rem;
 }
@@ -65,9 +75,14 @@ textarea#text_output {
     cursor: pointer;
 }
 
-img#loading {
-    display: block;
-    margin: 10% auto;
+#loading {
+    display: none;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    margin-left: -125px;
+    color: black;
+    background-color: white;
 }
 
 em {
@@ -78,10 +93,6 @@ em {
 
 em#icon_sun {
     display: none;
-}
-
-header {
-    position: relative;
 }
 
 .theme-switch-wrapper {

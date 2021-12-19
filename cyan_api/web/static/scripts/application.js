@@ -24,11 +24,19 @@ function switchTheme(e) {
     }
 }
 
-function submit(e) {
+async function submit() {
+    let loading = document.getElementById("loading");
+    loading.style.display = "inline";
+    await sleep(5000);
 
+    loading.style.display = "none";
 }
 
 function reset() {
     document.getElementById("text_input").value = "Enter text to summarize.";
     document.getElementById("text_output").value = "";
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
