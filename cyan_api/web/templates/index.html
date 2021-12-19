@@ -3,13 +3,24 @@
 <html lang="en">
     <head>
         <title>Cyan Text Abstraction Tool</title>
+        <link rel="shortcut icon" href="../static/img/favicon.ico" />
         <link rel="stylesheet" href="../static/css/application.css" />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="../static/scripts/example.js"></script>
+        <script src="https://kit.fontawesome.com/9cb02563c9.js" crossorigin="anonymous"></script>
+        <script src="../static/scripts/application.js"></script>
     </head>
 
     <body>
+        <div class="theme-switch-wrapper">
+            <em id="icon_sun"><i class="fas fa-sun"></i></em>
+            <em id="icon_moon"><i class="fas fa-moon"></i></em>
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider round"></div>
+            </label>
+        </div>
+
         <h1>Cyan</h1>
-        <img src="../static/img/robot.gif" alt="Please Wait" />
+        <h3>Text Abstraction Tool</h3>
+        <img src="../static/img/loading.gif" alt="Please Wait" />
     </body>
 </html>

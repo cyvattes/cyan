@@ -1,11 +1,96 @@
+:root {
+    --FGC: #3C3836;
+    --BGC: #FBF1C7;
+    --RED: #CC241D;
+    --GRN: #98971A;
+    --BLU: #458588;
+    --YLW: #D79921;
+    --PPL: #B16286;
+    --AQU: #689D6a;
+}
+
+[theme="dark"] {
+    --FGC: #EBDBB2;
+    --BGC: #282828;
+    --RED: #CC241D;
+    --GRN: #98971A;
+    --BLU: #458588;
+    --YLW: #D79921;
+    --PPL: #B16286;
+    --AQU: #689D6a;
+}
+
 body {
+    background-color: var(--BGC);
+    color: var(--FGC);
+    font-family: sans-serif;
     text-align: center;
 }
 
-h1 {
-    font-family: sans-serif;
+img {
+    display: block;
+    margin: 10% auto;
 }
 
-img {
-    transition: .5s ease-in-out;
+em {
+    color: var(--FGC);
+    font-size: 1rem;
+    margin: 0.15rem 0.5rem 0;
+}
+
+em#icon_sun {
+    display: none;
+}
+
+.theme-switch-wrapper {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.theme-switch {
+    display: inline-block;
+    position: relative;
+    height: 1.5rem;
+    width: 2.5rem;
+}
+
+.slider {
+    background-color: var(--FGC);
+    cursor: pointer;
+    position: absolute;
+    transition: .4s;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+input:checked + .slider {
+    background-color: var(--FGC);
+}
+
+.slider:before {
+    background-color: var(--YLW);
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    position: absolute;
+    transition: .4s;
+}
+
+input:checked + .slider:before {
+    transform: translateX(1rem);
+}
+
+.slider.round {
+    border-radius: 1.5rem;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }
