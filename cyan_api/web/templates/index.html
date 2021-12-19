@@ -10,17 +10,38 @@
     </head>
 
     <body>
-        <div class="theme-switch-wrapper">
-            <em id="icon_sun"><i class="fas fa-sun"></i></em>
-            <em id="icon_moon"><i class="fas fa-moon"></i></em>
-            <label class="theme-switch" for="checkbox">
-                <input type="checkbox" id="checkbox" />
-                <div class="slider round"></div>
-            </label>
-        </div>
+        <header>
+            <div class="title-wrapper">
+                <h1>Cyan</h1>
+                <h3>Text Abstraction Tool</h3>
+            </div>
+            <div class="theme-switch-wrapper">
+                <em id="icon_sun"><i class="fas fa-sun"></i></em>
+                <em id="icon_moon"><i class="fas fa-moon"></i></em>
+                <label for="checkbox" class="theme-switch">
+                    <input type="checkbox" id="checkbox"/>
+                    <div class="slider round"></div>
+                </label>
+            </div>
+        </header>
 
-        <h1>Cyan</h1>
-        <h3>Text Abstraction Tool</h3>
-        <img src="../static/img/loading.gif" alt="Please Wait" />
+        <section>
+            <hr>
+            <label for="text_input"></label>
+            <textarea id="text_input" name="text_input" rows="8">Enter text to summarize.</textarea>
+
+            <button class="button" id="submit">Summarize</button>
+            <button class="button" id="reset">Clear</button>
+
+            <label for="text_output"></label>
+            <textarea id="text_output" name="text_output" rows="8" readonly></textarea>
+            <hr>
+        </section>
+
+        <section>
+
+        </section>
+
+<!--        <img id="loading" src="../static/img/loading.gif" alt="Please Wait" />-->
     </body>
 </html>

@@ -9,24 +9,18 @@ pub(crate) async fn run_actix() -> Result<()> {
     println!("Service running at http://{}:{}", host, port);
     HttpServer::new(|| {
         App::new()
-            // .service(index)
+            .service(summarize)
+            .service(tokenize)
             .service(Files::new(
                 "/",
                 "cyan_api/web/")
                 .index_file("templates/index.html")
             )
-            .service(summarize)
-            .service(tokenize)
     })
         .bind(format!("{}:{}", host, port))?
         .run()
         .await
 }
-
-// #[get("/")]
-// async fn index() -> impl Responder {
-//     HttpResponse::Ok().body("Root")
-// }
 
 #[get("/summarize")]
 async fn summarize() -> impl Responder {
