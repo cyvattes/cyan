@@ -79,7 +79,7 @@ textarea::placeholder {
     left: 50%;
     margin-left: -125px;
     color: black;
-    background-color: white;
+    background-color: #FCFDFC;
 }
 
 em {

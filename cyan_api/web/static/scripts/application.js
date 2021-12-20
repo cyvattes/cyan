@@ -25,9 +25,6 @@ function switchTheme(e) {
 }
 
 async function submit() {
-    let waiting = document.getElementById("wait_time");
-    waiting.textContent = "Expected wait time: 5s";
-
     let loading = document.getElementById("loading");
     loading.style.display = "inline";
 

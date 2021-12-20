@@ -1,5 +1,5 @@
 use actix_files::Files;
-use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
+use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use cyan_nlg;
 use std::io::Result;
 
@@ -9,11 +9,12 @@ pub(crate) async fn run() -> Result<()> {
     println!("Service running at http://{}:{}", host, port);
     HttpServer::new(|| {
         App::new()
-            .service(summarize)
-            // .service(tokenize)
-            .service(Files::new(
-                "/",
-                "cyan_api/web/")
+            .service(
+                web::resource("/summarize")
+                    .route(web::post().to(summarize))
+            )
+            .service(
+                Files::new("/", "cyan_api/web/")
                 .index_file("templates/index.html")
             )
     })
@@ -22,20 +23,18 @@ pub(crate) async fn run() -> Result<()> {
         .await
 }
 
-#[post("/summarize")]
-async fn summarize(data: &str) -> impl Responder {
-    // let c = cyan_nlg::samples::SHORT;
+async fn summarize(body: web::Bytes) -> impl Responder {
+    let data = std::str::from_utf8(&*body).expect("Invalid request");
     let resp = cyan_nlg::summarize(data).await;
     HttpResponse::Ok().body(resp)
 }
 
-#[get("/summarize")]
-async fn summarize_get() -> impl Responder {
-    // let text = cyan_nlg::samples::SHORT;
-    // let body = cyan_nlg::summarize(text).await;
-    let body = String::from("result");
-    HttpResponse::Ok().body(body)
-}
+// #[get("/summarize")]
+// async fn summarize_get() -> impl Responder {
+//     let text = cyan_nlg::samples::SHORT;
+//     let body = cyan_nlg::summarize(text).await;
+//     HttpResponse::Ok().body(body)
+// }
 
 // #[get("/tokenize")]
 // async fn tokenize() -> impl Responder {
