@@ -29,7 +29,7 @@
 
             <hr>
             <label for="text_input"></label>
-            <textarea id="text_input" name="text_input" rows="8">Enter text to summarize.</textarea>
+            <textarea id="text_input" name="text_input" rows="8" placeholder="Enter text to summarize."></textarea>
 
             <button class="button" id="submit">Summarize</button>
             <button class="button" id="reset">Clear</button>
@@ -42,6 +42,7 @@
         <div id="loading">
             <p>Summarizing...</p>
             <img src="../static/img/loading.gif" alt="Please Wait"/>
+            <p id="wait_time">Expected wait time: {}</p>
         </div>
 
         <section>

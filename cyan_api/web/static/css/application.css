@@ -47,6 +47,7 @@ hr {
 
 textarea {
     background-color: var(--FGC);
+    color: var(--BGC);
     resize: none;
     border: none;
     display: flex;
@@ -54,12 +55,8 @@ textarea {
     margin-left: 3%;
 }
 
-textarea#text_input {
+textarea::placeholder {
     color: var(--PPL);
-}
-
-textarea#text_output {
-    color: var(--BGC);
 }
 
 .button {
@@ -78,7 +75,7 @@ textarea#text_output {
 #loading {
     display: none;
     position: absolute;
-    top: 10%;
+    top: 7.5%;
     left: 50%;
     margin-left: -125px;
     color: black;

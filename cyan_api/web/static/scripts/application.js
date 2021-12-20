@@ -25,18 +25,33 @@ function switchTheme(e) {
 }
 
 async function submit() {
+    let waiting = document.getElementById("wait_time");
+    waiting.textContent = "Expected wait time: 5s";
+
     let loading = document.getElementById("loading");
     loading.style.display = "inline";
-    await sleep(5000);
+
+    let data = document.getElementById("text_input").value;
+    document.getElementById("text_output").value = await summarize(data);
 
     loading.style.display = "none";
 }
 
 function reset() {
-    document.getElementById("text_input").value = "Enter text to summarize.";
+    document.getElementById("text_input").value = "";
     document.getElementById("text_output").value = "";
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+async function summarize(data) {
+    let resp = await fetch(
+        "http://127.0.0.1:51440/summarize",
+        {
+            method: "POST",
+            headers: {
+                "content-type": "text/plain;charset=UTF-8",
+            },
+            body: data,
+        }
+    );
+    return String(await resp.text());
 }
