@@ -31,12 +31,19 @@ async function submit() {
     let data = document.getElementById("text_input").value;
     document.getElementById("text_output").value = await summarize(data);
 
+    setSize();
+    setBleu();
+    setFreq();
+
     loading.style.display = "none";
 }
 
 function reset() {
     document.getElementById("text_input").value = "";
     document.getElementById("text_output").value = "";
+    document.getElementById("source_count").value = "0";
+    document.getElementById("abstract_count").value = "0";
+    document.getElementById("reduction_percent").value = "0";
 }
 
 async function summarize(data) {
@@ -51,4 +58,21 @@ async function summarize(data) {
         }
     );
     return String(await resp.text());
+}
+
+function setSize() {
+    let src = document.getElementById("text_input").value.length;
+    let abs = document.getElementById("text_output").value.length;
+    let red = src === 0 ? 0 : (100 * abs) / src;
+    document.getElementById("source_count").textContent = src;
+    document.getElementById("abstract_count").textContent = abs;
+    document.getElementById("reduction_percent").textContent = red.toFixed(2).toString();
+}
+
+function setBleu() {
+
+}
+
+function setFreq() {
+
 }
