@@ -7,6 +7,7 @@
     --YLW: #D79921;
     --PPL: #B16286;
     --AQU: #689D6a;
+    --WHT: #FCFDFC;
 }
 
 [theme="dark"] {
@@ -18,6 +19,7 @@
     --YLW: #D79921;
     --PPL: #B16286;
     --AQU: #689D6a;
+    --WHT: #FCFDFC;
 }
 
 body {
@@ -27,12 +29,7 @@ body {
     text-align: center;
 }
 
-header {
-    position: relative;
-    display: block;
-}
-
-section {
+header, section, footer {
     position: relative;
     display: block;
 }
@@ -42,7 +39,7 @@ h1, h2, h3 {
 }
 
 hr {
-    border: 1px solid var(--GRN);
+    border: 1px solid var(--AQU);
 }
 
 textarea {
@@ -79,7 +76,49 @@ textarea::placeholder {
     left: 50%;
     margin-left: -125px;
     color: black;
-    background-color: #FCFDFC;
+    background-color: var(--WHT);
+}
+
+.visualizations > div > h3 {
+    display: inline;
+    padding: 0 0.5rem;
+}
+
+.visualizations > div > hr {
+    width: 50%;
+    border: 1px solid var(--GRN);
+}
+
+#n_gram {
+    background-color: var(--WHT);
+    height: 2rem;
+    width: 2.5rem;
+    font-size: 1rem;
+}
+
+.freq {
+    position: relative;
+}
+
+.heatmap {
+    display: inline-block;
+    margin: 1rem 1rem 0;
+}
+
+#freq_label {
+    display: block;
+}
+
+#source_freq {
+    height: 18rem;
+    width: 18rem;
+    background-color: var(--RED);
+}
+
+#abstract_freq {
+    height: 18rem;
+    width: 18rem;
+    background-color: var(--BLU);
 }
 
 em {
@@ -92,7 +131,13 @@ em#icon_sun {
     display: none;
 }
 
-.theme-switch-wrapper {
+.name_wrapper {
+    position: absolute;
+    bottom: 10%;
+    right: 2%;
+}
+
+.theme_switch_wrapper {
     position: absolute;
     top: 30%;
     right: 2%;

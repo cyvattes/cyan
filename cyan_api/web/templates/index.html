@@ -11,11 +11,11 @@
 
     <body>
         <header>
-            <div class="title-wrapper">
+            <div class="title_wrapper">
                 <h1>Cyan</h1>
                 <h3>Text Abstraction Tool</h3>
             </div>
-            <div class="theme-switch-wrapper">
+            <div class="theme_switch_wrapper">
                 <em id="icon_sun"><i class="fas fa-sun"></i></em>
                 <em id="icon_moon"><i class="fas fa-moon"></i></em>
                 <label for="checkbox" class="theme-switch">
@@ -26,7 +26,6 @@
         </header>
 
         <section>
-
             <hr>
             <label for="text_input"></label>
             <textarea id="text_input" name="text_input" rows="8" placeholder="Enter text to summarize."></textarea>
@@ -45,8 +44,45 @@
             <p>This may take a while</p>
         </div>
 
-        <section>
+        <section class="visualizations">
+            <div class="size">
+                <h3>Source: <span id="source_count">0</span></h3>
+                <h3>Abstract: <span id="abstract_count">0</span></h3>
+                <h3>Size Reduction: <span id="reduction_percent">0</span>%</h3>
+                <hr>
+            </div>
 
+            <div class="bleu">
+                <h3>N-gram: <label for="n_gram">
+                    <select name="n_gram" id="n_gram">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </label></h3>
+                <h3>BLEU Score: <span id="bleu_score">0</span></h3>
+                <hr>
+            </div>
+
+            <div class="freq">
+                <h3 id="freq_label">N-gram Frequencies:</h3>
+                <div class="heatmap">
+                    <div id="source_freq"></div>
+                    <p>Source</p>
+                </div>
+                <div class="heatmap">
+                    <div id="abstract_freq"></div>
+                    <p>Abstract</p>
+                </div>
+                <hr>
+            </div>
         </section>
+
+        <footer>
+            <div class="name_wrapper">
+                <em>Cyrus Vattes</em>
+                <em>[001237324]</em>
+            </div>
+        </footer>
     </body>
 </html>
