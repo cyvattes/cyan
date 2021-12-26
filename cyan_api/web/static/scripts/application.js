@@ -25,6 +25,10 @@ function switchTheme(e) {
 }
 
 async function submit() {
+    if (document.getElementById("text_input").value.length === 0) {
+        return;
+    }
+
     let loading = document.getElementById("loading");
     loading.style.display = "inline";
 

@@ -52,26 +52,27 @@
                 <hr>
             </div>
 
-            <div class="bleu">
+            <div class="n_gram">
                 <h3>N-gram: <label for="n_gram">
                     <select name="n_gram" id="n_gram">
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
+                        <option value="4">4</option>
                     </select>
                 </label></h3>
-                <h3>BLEU Score: <span id="bleu_score">0</span></h3>
+                <button class="button" id="n_gram_submit">Calculate Scores</button>
                 <hr>
             </div>
 
-            <div class="freq">
-                <h3 id="freq_label">N-gram Frequencies:</h3>
+            <div class="bleu">
+                <h3 id="bleu_score_header">BLEU Score: <span id="bleu_score">0</span></h3>
                 <div class="heatmap">
-                    <div id="source_freq"></div>
+                    <div id="source_bleu"></div>
                     <p>Source</p>
                 </div>
                 <div class="heatmap">
-                    <div id="abstract_freq"></div>
+                    <div id="abstract_bleu"></div>
                     <p>Abstract</p>
                 </div>
                 <hr>
