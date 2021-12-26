@@ -1,6 +1,6 @@
 use tokenizers::tokenizer::{Tokenizer};
 
-pub fn tokenize(text: &str) -> String {
+pub fn _tokenize(text: &str) -> String {
     Tokenizer::from_pretrained(
         "facebook/bart-large-cnn",
         None,

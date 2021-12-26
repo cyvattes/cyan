@@ -1,13 +1,19 @@
 use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use cyan_nlg;
+use cyan_nlg::{self, n_gram::NGram};
 use std::io::Result;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
-struct Request {
+struct Req {
     src: String,
     abs: String,
+}
+
+#[derive(Serialize)]
+struct Resp {
+    abs: String,
+    n_grams: NGram,
 }
 
 pub(crate) async fn run() -> Result<()> {
@@ -34,15 +40,24 @@ pub(crate) async fn run() -> Result<()> {
         .await
 }
 
-async fn summarize(data: web::Json<Request>) -> impl Responder {
+async fn summarize(data: web::Json<Req>) -> impl Responder {
     let src = std::str::from_utf8(&*data.src.as_ref()).expect("Invalid request");
-    let resp = cyan_nlg::summarize(src).await;
-    HttpResponse::Ok().body(resp)
+    let resp = Resp {
+        abs: cyan_nlg::summarize(src).await,
+        n_grams: NGram::new(),
+    };
+    let json = serde_json::to_string(&resp).unwrap();
+    HttpResponse::Ok().body(json)
 }
 
-async fn calculate(data: web::Json<Request>) -> impl Responder {
+async fn calculate(data: web::Json<Req>) -> impl Responder {
     let src = std::str::from_utf8(&*data.src.as_ref()).expect("Invalid request");
     // let abs = std::str::from_utf8(&*data.abs.as_ref()).expect("Invalid request");
-    let resp = cyan_nlg::tokenize(src).await;
-    HttpResponse::Ok().body(resp)
+    // let resp = cyan_nlg::tokenize(src).await;
+    let resp = Resp {
+        abs: String::from(src),
+        n_grams: NGram::new(),
+    };
+    let json = serde_json::to_string(&resp).unwrap();
+    HttpResponse::Ok().body(json)
 }

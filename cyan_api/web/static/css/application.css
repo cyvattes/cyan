@@ -69,6 +69,10 @@ textarea::placeholder {
     cursor: pointer;
 }
 
+.disabled {
+    display: none;
+}
+
 #loading {
     display: none;
     position: absolute;

@@ -28,7 +28,10 @@ function switchTheme(e) {
 }
 
 async function submit() {
-    if (document.getElementById("text_input").value.length === 0) {
+    if (document.getElementById("text_input").value.length === 0 || (
+            this.id === "calculate" &&
+            document.getElementById("text_output").value.length === 0)
+    ) {
         return;
     }
 
@@ -44,6 +47,8 @@ async function submit() {
     setSize();
     setBleu();
     setFreq();
+
+    enable_hideable();
     loading.style.display = "none";
 }
 
@@ -53,6 +58,17 @@ function reset() {
     document.getElementById("source_count").value = "0";
     document.getElementById("abstract_count").value = "0";
     document.getElementById("reduction_percent").value = "0";
+    disable_hideable();
+}
+
+function enable_hideable() {
+    document.getElementById("calculate").classList.remove("disabled");
+    document.getElementById("bleu").classList.remove("disabled");
+}
+
+function disable_hideable() {
+    document.getElementById("calculate").classList.add("disabled");
+    document.getElementById("bleu").classList.add("disabled");
 }
 
 function get_data(src, abs) {
