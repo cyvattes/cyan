@@ -8,7 +8,7 @@ pub fn tokenize(text: &str) -> String {
         .unwrap()
         .encode(
         text,
-        false
+        true,
     )
         .unwrap()
         .get_tokens()

@@ -2,8 +2,11 @@ window.onload = function() {
     const themeToggle = document.querySelector(".theme-switch input[type='checkbox']");
     themeToggle.addEventListener("change", switchTheme, false);
 
-    const textInput = document.getElementById("submit");
-    textInput.addEventListener("click", submit, false);
+    const summarize = document.getElementById("summarize");
+    summarize.addEventListener("click", submit, false);
+
+    const calculate = document.getElementById("calculate");
+    calculate.addEventListener("click", submit, false);
 
     const textReset = document.getElementById("reset");
     textReset.addEventListener("click", reset, false);
@@ -32,13 +35,15 @@ async function submit() {
     let loading = document.getElementById("loading");
     loading.style.display = "inline";
 
-    let data = document.getElementById("text_input").value;
-    document.getElementById("text_output").value = await summarize(data);
+    let data = get_data(
+        document.getElementById("text_input").value,
+        document.getElementById("text_output").value,
+    );
+    document.getElementById("text_output").value = await post(this.id, data);
 
     setSize();
     setBleu();
     setFreq();
-
     loading.style.display = "none";
 }
 
@@ -50,13 +55,20 @@ function reset() {
     document.getElementById("reduction_percent").value = "0";
 }
 
-async function summarize(data) {
+function get_data(src, abs) {
+    return JSON.stringify({
+        src: src,
+        abs: abs,
+    });
+}
+
+async function post(endpoint, data) {
     let resp = await fetch(
-        "http://127.0.0.1:51440/summarize",
+        `http://127.0.0.1:51440/${endpoint}`,
         {
             method: "POST",
             headers: {
-                "content-type": "text/plain;charset=UTF-8",
+                "content-type": "application/json",
             },
             body: data,
         }
