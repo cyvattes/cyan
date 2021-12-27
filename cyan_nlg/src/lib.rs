@@ -1,7 +1,7 @@
-pub mod n_gram;
 mod summarizer;
-mod tokenizer;
+pub mod tokenizer;
 
+use tokenizer::NGram;
 use tokio;
 
 pub async fn summarize(text: &str) -> String {
@@ -11,4 +11,14 @@ pub async fn summarize(text: &str) -> String {
     })
         .await
         .expect("Thread panicked")
+}
+
+pub async fn tokenize(text: &str) -> NGram {
+    let t = text.to_string();
+    tokio::task::spawn_blocking(move || {
+        NGram::from(t)
+    })
+        .await
+        .expect("Thread panicked")
+        .await
 }

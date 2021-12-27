@@ -2,11 +2,11 @@ window.onload = function() {
     const themeToggle = document.querySelector(".theme-switch input[type='checkbox']");
     themeToggle.addEventListener("change", switchTheme, false);
 
-    const summarize = document.getElementById("summarize");
-    summarize.addEventListener("click", submit, false);
+    const textSubmit = document.getElementById("summarize");
+    textSubmit.addEventListener("click", summarize, false);
 
-    const calculate = document.getElementById("calculate");
-    calculate.addEventListener("click", submit, false);
+    const calcSubmit = document.getElementById("calculate");
+    calcSubmit.addEventListener("click", calculate, false);
 
     const textReset = document.getElementById("reset");
     textReset.addEventListener("click", reset, false);
@@ -27,11 +27,31 @@ function switchTheme(e) {
     }
 }
 
-async function submit() {
-    if (document.getElementById("text_input").value.length === 0 || (
-            this.id === "calculate" &&
-            document.getElementById("text_output").value.length === 0)
-    ) {
+async function summarize() {
+    if (document.getElementById("text_input").value.length === 0) {
+        return;
+    }
+
+    let loading = document.getElementById("loading");
+    loading.style.display = "inline";
+
+    let data = get_data(
+        document.getElementById("text_input").value,
+        "",
+    );
+    // TODO: Remove Debug Lines
+    let resp = "data"
+    // let resp = await post(this.id, data);
+    document.getElementById("text_output").value = resp;
+
+    setSize();
+    enable_hideable();
+    loading.style.display = "none";
+}
+
+async function calculate() {
+    if (document.getElementById("text_input").value.length === 0 ||
+        document.getElementById("text_output").value.length === 0) {
         return;
     }
 
@@ -42,13 +62,11 @@ async function submit() {
         document.getElementById("text_input").value,
         document.getElementById("text_output").value,
     );
-    document.getElementById("text_output").value = await post(this.id, data);
+    let resp = await post(this.id, data);
+    document.getElementById("text_output").value = resp;
 
-    setSize();
     setBleu();
     setFreq();
-
-    enable_hideable();
     loading.style.display = "none";
 }
 
@@ -102,7 +120,8 @@ function setSize() {
 }
 
 function setBleu() {
-
+    let bleu = document.getElementById("bleu_score");
+    bleu.textContent = `${parseInt(bleu.textContent, 10)+1}`;
 }
 
 function setFreq() {
