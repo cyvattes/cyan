@@ -20,19 +20,39 @@ impl NGram {
     }
 
     pub async fn from(text: String) -> NGram {
+        let t: String = text
+            .chars()
+            .filter(|c| c.is_ascii() && !c.is_ascii_punctuation())
+            .collect();
+
         NGram {
-            n1: get_ngrams(&text, 1).await,
-            n2: get_ngrams(&text, 2).await,
-            n3: get_ngrams(&text, 3).await,
-            n4: get_ngrams(&text, 4).await,
+            n1: get_ngrams(&t, 1).await,
+            n2: get_ngrams(&t, 2).await,
+            n3: get_ngrams(&t, 3).await,
+            n4: get_ngrams(&t, 4).await,
         }
     }
 }
 
-async fn get_ngrams(text: &str, n: i8) -> Vec<String> {
-    // TODO: loop over input text, collect groups of n, vec!
-    println!("{}, {}", n, text);
-    vec![String::from(text)]
+async fn get_ngrams(text: &str, n: usize) -> Vec<String> {
+    let t: Vec<_> = text
+        .split_ascii_whitespace()
+        .collect();
+
+    if t.len() < n {
+        return vec![];
+    }
+
+    let mut ngram = Vec::new();
+    for i in 0..=t.len()-n {
+        let mut v = Vec::new();
+        for j in 0..n {
+            v.push(t[i+j]);
+        }
+
+        ngram.push(v.join(" "));
+    }
+    ngram
 }
 
 /* DEBUG TOKENIZER

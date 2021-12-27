@@ -39,10 +39,7 @@ async function summarize() {
         document.getElementById("text_input").value,
         "",
     );
-    // TODO: Remove Debug Lines
-    let resp = "data"
-    // let resp = await post(this.id, data);
-    document.getElementById("text_output").value = resp;
+    document.getElementById("text_output").value = await post(this.id, data);
 
     setSize();
     enable_hideable();
@@ -63,9 +60,8 @@ async function calculate() {
         document.getElementById("text_output").value,
     );
     let resp = await post(this.id, data);
-    document.getElementById("text_output").value = resp;
 
-    setBleu();
+    setBleu(resp);
     setFreq();
     loading.style.display = "none";
 }
@@ -119,9 +115,8 @@ function setSize() {
     document.getElementById("reduction_percent").textContent = red.toFixed(2).toString();
 }
 
-function setBleu() {
-    let bleu = document.getElementById("bleu_score");
-    bleu.textContent = `${parseInt(bleu.textContent, 10)+1}`;
+function setBleu(bleu) {
+    console.log(bleu);
 }
 
 function setFreq() {
