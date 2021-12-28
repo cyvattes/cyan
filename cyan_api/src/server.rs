@@ -1,6 +1,7 @@
 use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use cyan_nlg::{self, tokenizer::NGram};
+use crate::str;
+use cyan_nlg;
 use std::io::Result;
 use serde::{Deserialize, Serialize};
 
@@ -8,12 +9,16 @@ use serde::{Deserialize, Serialize};
 struct Req {
     src: String,
     abs: String,
+    n: String,
 }
 
 #[derive(Serialize)]
 struct Resp {
-    src_ngram: NGram,
-    abs_ngram: NGram,
+    body: String,
+    bleu: String,
+    rouge: String,
+    src_ngram: Vec<String>,
+    abs_ngram: Vec<String>,
 }
 
 pub(crate) async fn run() -> Result<()> {
@@ -41,18 +46,45 @@ pub(crate) async fn run() -> Result<()> {
 }
 
 async fn summarize(data: web::Json<Req>) -> impl Responder {
-    let src = std::str::from_utf8(&*data.src.as_ref()).expect("Invalid request");
-    let resp = cyan_nlg::summarize(src).await;
+    let src = str::from_utf8(&*data.src.as_ref());
+    let s = cyan_nlg::summarize(src).await;
+
+    let abs = str::from_utf8(s.as_ref());
+    let n: usize = str::from_utf8(&*data.n.as_ref())
+        .parse()
+        .unwrap();
+
+    let src_ngram = cyan_nlg::tokenize(src, n).await;
+    let abs_ngram = cyan_nlg::tokenize(abs, n).await;
+
+    let resp = Resp {
+        body: abs.to_string(),
+        bleu: cyan_nlg::bleu(&src_ngram, &abs_ngram),
+        rouge: String::new(),
+        src_ngram,
+        abs_ngram,
+    };
+
     let json = serde_json::to_string(&resp).unwrap();
     HttpResponse::Ok().body(json)
 }
 
 async fn calculate(data: web::Json<Req>) -> impl Responder {
-    let src = std::str::from_utf8(&*data.src.as_ref()).expect("Invalid request");
-    let abs = std::str::from_utf8(&*data.abs.as_ref()).expect("Invalid request");
+    let src = str::from_utf8(&*data.src.as_ref());
+    let abs = str::from_utf8(&*data.abs.as_ref());
+    let n: usize = str::from_utf8(&*data.n.as_ref())
+        .parse()
+        .unwrap();
+
+    let src_ngram = cyan_nlg::tokenize(src, n).await;
+    let abs_ngram = cyan_nlg::tokenize(abs, n).await;
+
     let resp = Resp {
-        src_ngram: cyan_nlg::tokenize(src).await,
-        abs_ngram: cyan_nlg::tokenize(abs).await,
+        body: String::new(),
+        bleu: cyan_nlg::bleu(&src_ngram, &abs_ngram),
+        rouge: String::new(),
+        src_ngram,
+        abs_ngram,
     };
 
     let json = serde_json::to_string(&resp).unwrap();

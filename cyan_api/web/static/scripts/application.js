@@ -5,8 +5,8 @@ window.onload = function() {
     const textSubmit = document.getElementById("summarize");
     textSubmit.addEventListener("click", summarize, false);
 
-    const calcSubmit = document.getElementById("calculate");
-    calcSubmit.addEventListener("click", calculate, false);
+    const setNGram = document.getElementById("n_gram");
+    setNGram.addEventListener("change", calculate, false);
 
     const textReset = document.getElementById("reset");
     textReset.addEventListener("click", reset, false);
@@ -35,11 +35,12 @@ async function summarize() {
     let loading = document.getElementById("loading");
     loading.style.display = "inline";
 
-    let data = get_data(
-        document.getElementById("text_input").value,
-        "",
-    );
-    document.getElementById("text_output").value = await post(this.id, data);
+    let data = get_data();
+    let resp = JSON.parse(await post("summarize", data));
+    document.getElementById("text_output").value = resp.body;
+    document.getElementById("bleu_score").textContent = resp.bleu;
+
+    console.log(resp.abs_ngram);
 
     setSize();
     enable_hideable();
@@ -52,18 +53,12 @@ async function calculate() {
         return;
     }
 
-    let loading = document.getElementById("loading");
-    loading.style.display = "inline";
-
-    let data = get_data(
-        document.getElementById("text_input").value,
-        document.getElementById("text_output").value,
-    );
-    let resp = await post(this.id, data);
+    let data = get_data();
+    let resp = JSON.parse(await post("calculate", data));
 
     setBleu(resp);
     setFreq();
-    loading.style.display = "none";
+    enable_hideable();
 }
 
 function reset() {
@@ -76,19 +71,18 @@ function reset() {
 }
 
 function enable_hideable() {
-    document.getElementById("calculate").classList.remove("disabled");
     document.getElementById("bleu").classList.remove("disabled");
 }
 
 function disable_hideable() {
-    document.getElementById("calculate").classList.add("disabled");
     document.getElementById("bleu").classList.add("disabled");
 }
 
-function get_data(src, abs) {
+function get_data() {
     return JSON.stringify({
-        src: src,
-        abs: abs,
+        src: document.getElementById("text_input").value,
+        abs: document.getElementById("text_output").value,
+        n: document.getElementById("n_gram").value,
     });
 }
 
@@ -116,7 +110,7 @@ function setSize() {
 }
 
 function setBleu(bleu) {
-    console.log(bleu);
+
 }
 
 function setFreq() {
