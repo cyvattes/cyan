@@ -1,6 +1,7 @@
 mod bleu;
-mod summarizer;
 pub mod ngram;
+mod summarizer;
+mod tokenizer;
 
 use ngram::NGram;
 use tokio;

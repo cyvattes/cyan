@@ -1,5 +1,4 @@
 use serde::{Serialize};
-// use tokenizers::tokenizer::{Tokenizer};
 
 #[derive(Debug, Serialize)]
 pub struct NGram(Vec<String>);
@@ -16,10 +15,6 @@ impl NGram {
             .collect();
         build(&t, n).await
     }
-
-    // pub fn len(&self) -> usize {
-    //     self.len()
-    // }
 }
 
 async fn build(text: &str, n: usize) -> Vec<String> {
@@ -43,20 +38,3 @@ async fn build(text: &str, n: usize) -> Vec<String> {
 
     ngram
 }
-
-/* DEBUG TOKENIZER
-pub fn _tokenize(text: &str) -> String {
-    Tokenizer::from_pretrained(
-        "facebook/bart-large-cnn",
-        None,
-    )
-        .unwrap()
-        .encode(
-        text,
-        true,
-    )
-        .unwrap()
-        .get_tokens()
-        .join(", ")
-}
- */
