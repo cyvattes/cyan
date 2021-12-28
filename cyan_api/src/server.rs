@@ -14,7 +14,7 @@ struct Req {
 
 #[derive(Serialize)]
 struct Resp {
-    body: String,
+    abs: String,
     bleu: String,
     rouge: String,
     src_ngram: Vec<String>,
@@ -58,7 +58,7 @@ async fn summarize(data: web::Json<Req>) -> impl Responder {
     let abs_ngram = cyan_nlg::tokenize(abs, n).await;
 
     let resp = Resp {
-        body: abs.to_string(),
+        abs: abs.to_string(),
         bleu: cyan_nlg::bleu(&src_ngram, &abs_ngram),
         rouge: String::new(),
         src_ngram,
@@ -80,7 +80,7 @@ async fn calculate(data: web::Json<Req>) -> impl Responder {
     let abs_ngram = cyan_nlg::tokenize(abs, n).await;
 
     let resp = Resp {
-        body: String::new(),
+        abs: String::new(),
         bleu: cyan_nlg::bleu(&src_ngram, &abs_ngram),
         rouge: String::new(),
         src_ngram,
