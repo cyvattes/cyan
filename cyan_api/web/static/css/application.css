@@ -76,7 +76,7 @@ textarea::placeholder {
 #loading {
     display: none;
     position: absolute;
-    top: 7.5%;
+    top: 10.5%;
     left: 50%;
     margin-left: -125px;
     color: black;
@@ -108,23 +108,22 @@ textarea::placeholder {
     display: block;
 }
 
-#bleu_score {
-    /*display: inline-flex;*/
+#frequency_header {
+    display: block;
 }
-
 
 .heatmap {
     display: inline-block;
     margin: 1rem 1rem 0;
 }
 
-#source_bleu {
+#source_freq {
     height: 18rem;
     width: 18rem;
     background-color: var(--RED);
 }
 
-#abstract_bleu {
+#abstract_freq {
     height: 18rem;
     width: 18rem;
     background-color: var(--BLU);
@@ -142,8 +141,8 @@ em#icon_sun {
 
 .name_wrapper {
     position: absolute;
-    bottom: 10%;
-    right: 2%;
+    top: 40%;
+    left: 2%;
 }
 
 .theme_switch_wrapper {

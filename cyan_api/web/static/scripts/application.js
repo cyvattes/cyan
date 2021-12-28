@@ -99,8 +99,10 @@ function setFields(resp) {
 
 function view_diabled() {
     document.getElementById("bleu").classList.remove("disabled");
+    document.getElementById("freq").classList.remove("disabled");
 }
 
 function hide_disabled() {
     document.getElementById("bleu").classList.add("disabled");
+    document.getElementById("freq").classList.add("disabled");
 }
