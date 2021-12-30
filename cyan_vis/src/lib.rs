@@ -3,7 +3,7 @@ use chrono::{Date, Duration};
 use plotters::prelude::*;
 
 pub fn plot() -> Result<(), Box<dyn std::error::Error>> {
-    const FILENAME: &'static str = "stock.png";
+    const FILENAME: &'static str = ".out/stock.png";
 
     let data = get_data();
     let root = BitMapBackend::new(FILENAME, (288, 288))
