@@ -6,3 +6,6 @@ license = "GPL-3.0-or-later"
 authors = ["CK Vattes <cvatte1@wgu.edu>"]
 
 [dependencies]
+plotters = "0.3.1"
+plotters-canvas = "0.3.0"
+chrono = "0.4.19"

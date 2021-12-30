@@ -2,6 +2,7 @@ use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use crate::str;
 use cyan_nlg;
+use cyan_vis;
 use std::io::Result;
 use serde::{Deserialize, Serialize};
 
@@ -16,6 +17,7 @@ struct Req {
 struct Resp {
     abs: String,
     bleu: String,
+    // TODO: Return Plotted Graphics
     src_ngram: Vec<String>,
     abs_ngram: Vec<String>,
 }
@@ -63,6 +65,8 @@ async fn summarize(data: web::Json<Req>) -> impl Responder {
         abs_ngram,
     };
 
+    cyan_vis::plot().unwrap();
+
     let json = serde_json::to_string(&resp).unwrap();
     HttpResponse::Ok().body(json)
 }
@@ -83,6 +87,8 @@ async fn calculate(data: web::Json<Req>) -> impl Responder {
         src_ngram,
         abs_ngram,
     };
+
+    cyan_vis::plot().unwrap();
 
     let json = serde_json::to_string(&resp).unwrap();
     HttpResponse::Ok().body(json)
