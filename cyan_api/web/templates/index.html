@@ -55,6 +55,11 @@
                 <hr>
             </div>
 
+            <div class="bleu disabled" id="bleu">
+                <h3 id="bleu_score_header">BLEU Score: <span id="bleu_score">0</span> (text similarity)</h3>
+                <hr>
+            </div>
+
             <div class="n_gram">
                 <h3>N-gram: <label for="n_gram">
                     <select name="n_gram" id="n_gram">
@@ -64,23 +69,23 @@
                         <option value="4">4</option>
                     </select>
                 </label></h3>
-                <hr>
-            </div>
-
-            <div class="bleu disabled" id="bleu">
-                <h3 id="bleu_score_header">BLEU Score: <span id="bleu_score">0</span> (text similarity)</h3>
+                <div class="n_gram_comp disabled" id="n_gram_comp">
+                    <div class="heatmap">
+                        <div id="source_n_gram"></div>
+                        <p>Source</p>
+                    </div>
+                    <div class="heatmap">
+                        <div id="abstract_n_gram"></div>
+                        <p>Abstract</p>
+                    </div>
+                </div>
                 <hr>
             </div>
 
             <div class="freq disabled" id="freq">
-                <h3 id="frequency_header">Frequency Maps</h3>
+                <h3 id="frequency_header">POS Frequency</h3>
                 <div class="heatmap">
-                    <div id="source_freq"></div>
-                    <p>Source</p>
-                </div>
-                <div class="heatmap">
-                    <div id="abstract_freq"></div>
-                    <p>Abstract</p>
+                    <img id="pos_frequency" src="#" alt="POS Frequency">
                 </div>
                 <hr>
             </div>

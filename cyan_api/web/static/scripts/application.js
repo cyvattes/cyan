@@ -54,6 +54,15 @@ function reset() {
     hide_disabled();
 }
 
+async function get(endoint) {
+    await fetch(
+        `http://127.0.0.1:51440/${endpoint}`,
+        {
+            method: "GET",
+        }
+    );
+}
+
 async function post(endpoint) {
     let data = getData();
     let resp = await fetch(
@@ -67,7 +76,7 @@ async function post(endpoint) {
         }
     );
     setFields(String(await resp.text()));
-    view_diabled();
+    view_disabled();
 }
 
 function getData() {
@@ -95,14 +104,19 @@ function setFields(resp) {
 
     // Set BLEU % values
     document.getElementById("bleu_score").textContent = data.bleu;
+
+    // Set Frequency Values
+    document.getElementById("pos_frequency").src = "../static/img/stock.png";
 }
 
-function view_diabled() {
+function view_disabled() {
     document.getElementById("bleu").classList.remove("disabled");
+    document.getElementById("n_gram_comp").classList.remove("disabled");
     document.getElementById("freq").classList.remove("disabled");
 }
 
 function hide_disabled() {
     document.getElementById("bleu").classList.add("disabled");
+    document.getElementById("n_gram_comp").classList.add("disabled");
     document.getElementById("freq").classList.add("disabled");
 }

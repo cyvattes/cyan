@@ -1,8 +1,8 @@
 use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use crate::str;
 use cyan_nlg;
 use cyan_vis;
+use futures::future::try_join;
 use std::io::Result;
 use serde::{Deserialize, Serialize};
 
@@ -17,9 +17,6 @@ struct Req {
 struct Resp {
     abs: String,
     bleu: String,
-    // TODO: Return Plotted Graphics
-    src_ngram: Vec<String>,
-    abs_ngram: Vec<String>,
 }
 
 pub(crate) async fn run() -> Result<()> {
@@ -47,48 +44,51 @@ pub(crate) async fn run() -> Result<()> {
 }
 
 async fn summarize(data: web::Json<Req>) -> impl Responder {
-    let src = str::from_utf8(&*data.src.as_ref());
-    let s = cyan_nlg::summarize(src).await;
-
-    let abs = str::from_utf8(s.as_ref());
-    let n: usize = str::from_utf8(&*data.n.as_ref())
-        .parse()
-        .unwrap();
-
-    let src_ngram = cyan_nlg::tokenize(src, n).await;
-    let abs_ngram = cyan_nlg::tokenize(abs, n).await;
-
-    let resp = Resp {
-        abs: abs.to_string(),
-        bleu: cyan_nlg::bleu(&src_ngram, &abs_ngram),
-        src_ngram,
-        abs_ngram,
-    };
-
-    cyan_vis::plot().unwrap();
-
-    let json = serde_json::to_string(&resp).unwrap();
-    HttpResponse::Ok().body(json)
+    let (src, _abs, n) = (
+        data.src.as_str(),
+        data.abs.as_str(),
+        data.n.parse().unwrap(),
+    );
+    let summary = cyan_nlg::summarize(src).await;
+    let abs = summary.as_str();
+    set_and_respond(src, abs, n).await
 }
 
 async fn calculate(data: web::Json<Req>) -> impl Responder {
-    let src = str::from_utf8(&*data.src.as_ref());
-    let abs = str::from_utf8(&*data.abs.as_ref());
-    let n: usize = str::from_utf8(&*data.n.as_ref())
-        .parse()
-        .unwrap();
+    let (src, abs, n) = (
+        data.src.as_str(),
+        data.abs.as_str(),
+        data.n.parse().unwrap(),
+    );
+    set_and_respond(src, abs, n).await
+}
 
-    let src_ngram = cyan_nlg::tokenize(src, n).await;
-    let abs_ngram = cyan_nlg::tokenize(abs, n).await;
+async fn set_and_respond(src: &str, abs: &str, n: usize) -> impl Responder {
+    let bleu = set(src, abs, n).await;
+    respond(abs.to_string(), bleu)
+}
 
-    let resp = Resp {
-        abs: String::new(),
-        bleu: cyan_nlg::bleu(&src_ngram, &abs_ngram),
-        src_ngram,
-        abs_ngram,
+async fn set(src: &str, abs: &str, n: usize) -> String {
+    let (src_ngram, abs_ngram) = match try_join(
+        cyan_nlg::tokenize(src, n),
+        cyan_nlg::tokenize(abs, n),
+    ).await {
+        Ok(v) => v,
+        Err(_) => (
+            vec![String::new()],
+            vec![String::new()],
+        ),
     };
 
-    cyan_vis::plot().unwrap();
+    cyan_vis::plot(&src_ngram, &abs_ngram).await;
+    cyan_nlg::bleu(&src_ngram, &abs_ngram)
+}
+
+fn respond(abs: String, bleu: String) -> impl Responder {
+    let resp = Resp {
+        abs,
+        bleu,
+    };
 
     let json = serde_json::to_string(&resp).unwrap();
     HttpResponse::Ok().body(json)

@@ -1,12 +1,22 @@
 use chrono::offset::{Local, TimeZone};
 use chrono::{Date, Duration};
+use futures::future::try_join_all;
 use plotters::prelude::*;
 
-pub fn plot() -> Result<(), Box<dyn std::error::Error>> {
-    const FILENAME: &'static str = ".out/stock.png";
+pub async fn plot(src: &Vec<String>, abs: &Vec<String>) {
+    let handles = vec!(
+        async { plot_freq(src, abs) },
+        // async { plot_comp(src, abs) },
+    );
+
+    try_join_all(handles).await.unwrap();
+}
+
+pub fn plot_freq(_src: &Vec<String>, _abs: &Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
+    const FILENAME: &'static str = "cyan_api/web/static/img/freq.png";
 
     let data = get_data();
-    let root = BitMapBackend::new(FILENAME, (288, 288))
+    let root = BitMapBackend::new(FILENAME, (608, 288))
         .into_drawing_area();
     root.fill(&WHITE)?;
 

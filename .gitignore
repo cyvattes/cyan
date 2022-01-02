@@ -1,6 +1,6 @@
 target/
-.out/
 .idea/
 .vscode/
 .DS_Store
+*.png
 Cargo.lock

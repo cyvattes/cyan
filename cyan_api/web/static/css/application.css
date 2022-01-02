@@ -117,16 +117,21 @@ textarea::placeholder {
     margin: 1rem 1rem 0;
 }
 
-#source_freq {
+#source_n_gram {
     height: 18rem;
     width: 18rem;
     background-color: var(--RED);
 }
 
-#abstract_freq {
+#abstract_n_gram {
     height: 18rem;
     width: 18rem;
     background-color: var(--BLU);
+}
+
+#pos_frequency {
+    height: 18rem;
+    width: 38rem;
 }
 
 em {
