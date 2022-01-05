@@ -1,35 +1,77 @@
+use std::error::Error;
 use chrono::offset::{Local, TimeZone};
 use chrono::{Date, Duration};
 use futures::future::try_join_all;
+use plotters::coord::types::RangedCoordf32;
 use plotters::prelude::*;
+use tokio;
 
 pub async fn plot(src: &Vec<String>, abs: &Vec<String>) {
-    let handles = vec!(
+    let handles = vec![
+        async { plot_comp(src, abs) },
         async { plot_freq(src, abs) },
-        // async { plot_comp(src, abs) },
-    );
-
-    try_join_all(handles).await.unwrap();
+    ];
+    try_join_all(handles).await;
 }
 
-pub fn plot_freq(_src: &Vec<String>, _abs: &Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
-    const FILENAME: &'static str = "cyan_api/web/static/img/freq.png";
-
+fn plot_comp(_src: &Vec<String>, _abs: &Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
     let data = get_data();
-    let root = BitMapBackend::new(FILENAME, (608, 288))
-        .into_drawing_area();
-    root.fill(&WHITE)?;
-
     let (to_date, from_date) = (
         parse_time(data[0].0) + Duration::days(1),
         parse_time(data[29].0) - Duration::days(1),
     );
 
+    const FILENAME_SRC: &'static str = "cyan_api/web/static/img/ngram_src.png";
+    let root_src = BitMapBackend::new(FILENAME_SRC, (288, 288))
+        .into_drawing_area();
+    root_src.fill(&WHITE)?;
+    let mut chart_src = ChartBuilder::on(&root_src)
+        .x_label_area_size(30)
+        .y_label_area_size(30)
+        .build_cartesian_2d(from_date..to_date, 110f32..135f32)?;
+    draw_histogram(&data, &mut chart_src);
+
+    const FILENAME_ABS: &'static str = "cyan_api/web/static/img/ngram_abs.png";
+    let root_abs = BitMapBackend::new(FILENAME_ABS, (288, 288))
+        .into_drawing_area();
+    root_abs.fill(&WHITE)?;
+    let mut chart_abs = ChartBuilder::on(&root_abs)
+        .x_label_area_size(30)
+        .y_label_area_size(30)
+        .build_cartesian_2d(from_date..to_date, 110f32..135f32)?;
+    draw_histogram(&data, &mut chart_abs);
+
+    root_src.present().expect("Unable to write file");
+    root_abs.present().expect("Unable to write file");
+    println!("Files written to {}, {}", FILENAME_SRC, FILENAME_ABS);
+
+    Ok(())
+}
+
+fn plot_freq(_src: &Vec<String>, _abs: &Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
+    let data = get_data();
+    let (to_date, from_date) = (
+        parse_time(data[0].0) + Duration::days(1),
+        parse_time(data[29].0) - Duration::days(1),
+    );
+
+    const FILENAME: &'static str = "cyan_api/web/static/img/freq.png";
+    let root = BitMapBackend::new(FILENAME, (608, 288))
+        .into_drawing_area();
+    root.fill(&WHITE)?;
     let mut chart = ChartBuilder::on(&root)
         .x_label_area_size(30)
         .y_label_area_size(30)
         .build_cartesian_2d(from_date..to_date, 110f32..135f32)?;
+    draw_histogram(&data, &mut chart);
 
+    root.present().expect("Unable to write file");
+    println!("File written to {}", FILENAME);
+
+    Ok(())
+}
+
+fn draw_histogram(data: &Vec<(&str, f32, f32, f32, f32)>, chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedDate<Date<Local>>, RangedCoordf32>>) -> Result<(), Box<dyn std::error::Error>> {
     chart.configure_mesh().light_line_style(&WHITE).draw()?;
     chart.draw_series(
         data.iter()
@@ -44,10 +86,6 @@ pub fn plot_freq(_src: &Vec<String>, _abs: &Vec<String>) -> Result<(), Box<dyn s
                 15)
             ),
     )?;
-
-    root.present().expect("Unable to write file");
-    println!("File written to {}", FILENAME);
-
     Ok(())
 }
 
