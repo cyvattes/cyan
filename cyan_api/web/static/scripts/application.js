@@ -105,8 +105,12 @@ function setFields(resp) {
     // Set BLEU % values
     document.getElementById("bleu_score").textContent = data.bleu;
 
+    // Set N-Gram Comparison Values
+    document.getElementById("source_n_gram").src = "../static/img/comp_src.png";
+    document.getElementById("abstract_n_gram").src = "../static/img/comp_abs.png";
+
     // Set Frequency Values
-    document.getElementById("pos_frequency").src = "../static/img/stock.png";
+    document.getElementById("pos_frequency").src = "../static/img/freq.png";
 }
 
 function view_disabled() {
