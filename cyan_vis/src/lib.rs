@@ -48,26 +48,26 @@ fn plot_histogram(name: &'static str, data: &Vec<(String, usize)>) {
     // println!("{:?}", b);
     let mut chart = ChartBuilder::on(&root)
         .x_label_area_size(35)
-        .y_label_area_size(40)
+        .y_label_area_size(60)
         .margin(5)
         .build_cartesian_2d(
-            (1u32..NGRAM_FIELD_LENGTH as u32).into_segmented(),
             0u32..data[0].1 as u32 + 2,
+            (1u32..NGRAM_FIELD_LENGTH as u32).into_segmented(),
         )
         .unwrap();
 
     chart
         .configure_mesh()
-        .disable_x_mesh()
+        .disable_y_mesh()
         .bold_line_style(&WHITE.mix(0.3))
-        .y_desc("Count")
-        .x_desc("N-Gram")
-        .x_label_formatter(&|sv| {
-            let x: usize = match sv {
+        .x_desc("Count")
+        .y_desc("N-Gram")
+        .y_label_formatter(&|sv| {
+            let y: usize = match sv {
                 CenterOf(val) => *val,
                 _ => 0,
             } as usize;
-            format!("{:?}", data[x-1].0)
+            format!("{:?}", data[y-1].0)
         })
         .axis_desc_style(("sans-serif", 12))
         .draw()
@@ -75,7 +75,7 @@ fn plot_histogram(name: &'static str, data: &Vec<(String, usize)>) {
 
     let mut c = 0;
     chart.draw_series(
-        Histogram::vertical(&chart)
+        Histogram::horizontal(&chart)
             .style(RED.mix(0.5).filled())
             .data(data
                 .iter()
