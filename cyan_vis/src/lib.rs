@@ -1,14 +1,83 @@
+mod ngram;
+
 use chrono::offset::{Local, TimeZone};
 use chrono::{Date, Duration};
 use futures::join;
 use plotters::coord::types::RangedCoordf32;
 use plotters::prelude::*;
+use std::error::Error;
+use tokio::task::{JoinHandle, spawn_blocking};
 
 pub async fn plot(src: &Vec<String>, abs: &Vec<String>) {
     join!(
-        async { plot_comp(src, abs) },
-        async { plot_freq(src, abs) },
+        plot_n_grams("ng_src", src),
+        plot_n_grams("ng_abs", abs),
+        plot_freq(src, abs),
     );
+
+    println!("Plotted a thing");
+}
+
+async fn plot_n_grams(name: &str, text: &Vec<String>) -> JoinHandle<()> {
+    let t = text.to_owned();
+    spawn_blocking(move || {
+        // 1: calculate top X n-grams for text
+        let top = ngram::get_top(t, 10);
+        println!("{:?}", top);
+
+        // 2: graph
+        plot_histogram(name, &top)
+    })
+}
+
+async fn plot_freq(_src: &Vec<String>, _abs: &Vec<String>) -> JoinHandle<()> {
+    spawn_blocking(move || {
+        // 1: calculate POS for src, abs
+        // 2: graph
+
+        // thing();
+    })
+}
+
+fn plot_histogram(name: &str, data: &Vec<(String, usize)>) {
+    let file = format!("cyan_api/web/static/img/{}.png", name);
+}
+
+fn thing() {
+    const OUT_FILE_NAME: &'static str = "cyan_api/web/static/img/comp_src.png";
+    let root = BitMapBackend::new(OUT_FILE_NAME, (640, 480)).into_drawing_area();
+
+    root.fill(&WHITE).unwrap();
+
+    let mut chart = ChartBuilder::on(&root)
+        .x_label_area_size(35)
+        .y_label_area_size(40)
+        .margin(5)
+        .caption("Histogram Test", ("sans-serif", 50.0))
+        .build_cartesian_2d((0u32..10u32).into_segmented(), 0u32..10u32).unwrap();
+
+    chart
+        .configure_mesh()
+        .disable_x_mesh()
+        .bold_line_style(&WHITE.mix(0.3))
+        .y_desc("Count")
+        .x_desc("Bucket")
+        .axis_desc_style(("sans-serif", 15))
+        .draw().unwrap();
+
+    let data = [
+        0u32, 1, 1, 1, 4, 2, 5, 7, 8, 6, 4, 2, 1, 8, 3, 3, 3, 4, 4, 3, 3, 3,
+    ];
+
+    chart.draw_series(
+        Histogram::vertical(&chart)
+            .style(RED.mix(0.5).filled())
+            .data(data.iter().map(|x: &u32| (*x, 1))),
+    ).unwrap();
+
+    // To avoid the IO failure being ignored silently, we manually call the present function
+    root.present().expect("Unable to write result to file, please make sure 'plotters-doc-data' dir exists under current dir");
+    println!("Result has been saved to {}", OUT_FILE_NAME);
 }
 
 fn plot_comp(_src: &Vec<String>, _abs: &Vec<String>) {
@@ -36,13 +105,13 @@ fn plot_comp(_src: &Vec<String>, _abs: &Vec<String>) {
         .x_label_area_size(30)
         .y_label_area_size(30)
         .build_cartesian_2d(from_date..to_date, 110f32..135f32).unwrap();
-    draw_histogram(&data, &mut chart_abs);
+    draw_candlestick(&data, &mut chart_abs);
 
     root_src.present().expect("Unable to write file");
     root_abs.present().expect("Unable to write file");
 }
 
-fn plot_freq(_src: &Vec<String>, _abs: &Vec<String>) {
+fn plot_freq2(_src: &Vec<String>, _abs: &Vec<String>) {
     let data = get_data();
     let (to_date, from_date) = (
         parse_time(data[0].0) + Duration::days(1),
@@ -62,7 +131,7 @@ fn plot_freq(_src: &Vec<String>, _abs: &Vec<String>) {
     root.present().expect("Unable to write file");
 }
 
-fn draw_histogram(data: &Vec<(&str, f32, f32, f32, f32)>, chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedDate<Date<Local>>, RangedCoordf32>>) {
+fn draw_candlestick(data: &Vec<(&str, f32, f32, f32, f32)>, chart: &mut ChartContext<BitMapBackend, Cartesian2d<RangedDate<Date<Local>>, RangedCoordf32>>) {
     chart.configure_mesh()
         .light_line_style(&WHITE)
         .draw()

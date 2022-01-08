@@ -2,7 +2,7 @@ use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use cyan_nlg;
 use cyan_vis;
-use futures::future::try_join;
+use futures::try_join;
 use std::io::Result;
 use serde::{Deserialize, Serialize};
 
@@ -17,6 +17,7 @@ struct Req {
 struct Resp {
     abs: String,
     bleu: String,
+    rouge: String,
 }
 
 pub(crate) async fn run() -> Result<()> {
@@ -64,15 +65,20 @@ async fn calculate(data: web::Json<Req>) -> impl Responder {
 }
 
 async fn set_and_respond(src: &str, abs: &str, n: usize) -> impl Responder {
-    let bleu = set(src, abs, n).await;
-    respond(abs.to_string(), bleu)
+    let resp = Resp {
+        abs: abs.to_string(),
+        bleu: set(src, abs, n).await,
+        rouge: String::new(),
+    };
+
+    respond(&resp)
 }
 
 async fn set(src: &str, abs: &str, n: usize) -> String {
-    let (src_ngram, abs_ngram) = match try_join(
+    let (src_ngram, abs_ngram) = match try_join!(
         cyan_nlg::tokenize(src, n),
         cyan_nlg::tokenize(abs, n),
-    ).await {
+    ) {
         Ok(v) => v,
         Err(_) => (
             vec![String::new()],
@@ -84,12 +90,7 @@ async fn set(src: &str, abs: &str, n: usize) -> String {
     cyan_nlg::bleu(&src_ngram, &abs_ngram)
 }
 
-fn respond(abs: String, bleu: String) -> impl Responder {
-    let resp = Resp {
-        abs,
-        bleu,
-    };
-
-    let json = serde_json::to_string(&resp).unwrap();
+fn respond(resp: &Resp) -> impl Responder {
+    let json = serde_json::to_string(resp).unwrap();
     HttpResponse::Ok().body(json)
 }

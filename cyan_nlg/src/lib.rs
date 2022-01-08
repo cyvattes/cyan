@@ -3,15 +3,11 @@ pub mod ngram;
 mod summarizer;
 mod tokenizer;
 
-use std::future::Future;
-// use futures::future::try_join_all;
 use ngram::NGram;
-use tokio::{
-    self,
-    // try_join,
-    // task::JoinHandle,
-    // time::Instant,
-};
+use std::error::Error;
+use tokio::task::spawn_blocking;
+
+type Handle = Result<Vec<String>, Box<dyn Error>>;
 
 pub async fn summarize(text: &str) -> String {
     text.to_string()
@@ -27,7 +23,7 @@ pub async fn summarize(text: &str) -> String {
     //     .expect("Thread panicked")
 }
 
-pub async fn tokenize(text: &str, n: usize) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+pub async fn tokenize(text: &str, n: usize) -> Handle {
     let t = text.to_string();
     let r = tokio::task::spawn_blocking(move || {
         NGram::from(t, n)
