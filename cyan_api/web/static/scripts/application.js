@@ -97,7 +97,7 @@ function setFields(resp) {
     // Set reduction values
     let src = document.getElementById("text_input").value.length;
     let abs = document.getElementById("text_output").value.length;
-    let red = src === 0 ? 0 : (100 * abs) / src;
+    let red = src === 0 ? 0 : (100 * (src - abs)) / src;
     document.getElementById("source_count").textContent = src;
     document.getElementById("abstract_count").textContent = String(abs);
     document.getElementById("reduction_percent").textContent = red.toFixed(2).toString();
@@ -106,8 +106,8 @@ function setFields(resp) {
     document.getElementById("bleu_score").textContent = data.bleu;
 
     // Set N-Gram Comparison Values
-    document.getElementById("source_n_gram").src = "../static/img/comp_src.png";
-    document.getElementById("abstract_n_gram").src = "../static/img/comp_abs.png";
+    document.getElementById("source_n_gram").src = "../static/img/ng_src.png?" + Math.random();
+    document.getElementById("abstract_n_gram").src = "../static/img/ng_abs.png?" + Math.random();
 
     // Set Frequency Values
     document.getElementById("pos_frequency").src = "../static/img/freq.png";
