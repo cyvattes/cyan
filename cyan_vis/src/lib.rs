@@ -13,7 +13,7 @@ const NGRAM_FIELD_LENGTH: usize = 10;
 pub async fn plot(src: &Vec<String>, abs: &Vec<String>) {
     join!(
         plot_n_grams("ng_src", src),
-        plot_n_grams("ng_abs", abs),
+        // plot_n_grams("ng_abs", abs),
         plot_freq(src, abs),
     );
 }
@@ -43,9 +43,6 @@ fn plot_histogram(name: &'static str, data: &Vec<(String, usize)>) {
     let root = BitMapBackend::new(file, (288, 288)).into_drawing_area();
     root.fill(&WHITE).unwrap();
 
-    // let fields: Box<[String]> = Box::from(data.iter().map(|(field, _)| field).collect());
-    // let b =(1u32..10u32).into_segmented();
-    // println!("{:?}", b);
     let mut chart = ChartBuilder::on(&root)
         .x_label_area_size(35)
         .y_label_area_size(60)
@@ -60,31 +57,27 @@ fn plot_histogram(name: &'static str, data: &Vec<(String, usize)>) {
         .configure_mesh()
         .disable_y_mesh()
         .bold_line_style(&WHITE.mix(0.3))
-        .x_desc("Count")
-        .y_desc("N-Gram")
+        .x_desc("Occurrences")
         .y_label_formatter(&|sv| {
-            let y: usize = match sv {
+            let i: usize = match sv {
                 CenterOf(val) => *val,
                 _ => 0,
             } as usize;
-            format!("{:?}", data[y-1].0)
+            format!("{:?}", data[i-1].0)
         })
         .axis_desc_style(("sans-serif", 12))
         .draw()
         .unwrap();
 
-    let mut c = 0;
-    chart.draw_series(
-        Histogram::horizontal(&chart)
-            .style(RED.mix(0.5).filled())
-            .data(data
-                .iter()
-                .map(|(_, y)| {
-                    c += 1;
-                    (c, *y as u32)
-                })
-            )
-    ).unwrap();
+    chart.draw_series((1..).zip(data.iter()).map(|(y, (_, x))| {
+        let mut bar = Rectangle::new([
+                                         (0, SegmentValue::Exact(y)),
+                                         (*x as u32, SegmentValue::Exact(y + 1))
+                                     ], RED.mix(0.5).filled());
+        bar.set_margin(5, 5, 0, 0);
+        bar
+    }))
+        .unwrap();
 
     root.present().expect("Directory not found");
 }
