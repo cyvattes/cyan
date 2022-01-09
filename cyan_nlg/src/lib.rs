@@ -3,12 +3,14 @@ mod ngram;
 mod summary;
 mod token;
 mod tokenizer;
+pub mod utils;
 
 use std::error::Error;
 use tokio::task::spawn_blocking;
 
 type StrHandle = Result<String, Box<dyn Error>>;
 type VecHandle = Result<Vec<String>, Box<dyn Error>>;
+type TupHandle = Result<Vec<(String, u32)>, Box<dyn Error>>;
 
 pub fn strip(text: &str) -> String {
     let t: String = text
@@ -31,7 +33,7 @@ pub async fn summarize(text: &str) -> StrHandle {
     Ok(r)
 }
 
-pub async fn tokenize(text: &str) -> VecHandle {
+pub async fn tokenize(text: &str) -> TupHandle {
     let t = text.to_string();
     let r =  tokio::task::spawn_blocking(move || {
         // return vector of POS tokens

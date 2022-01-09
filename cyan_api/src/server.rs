@@ -45,22 +45,14 @@ pub(crate) async fn run() -> Result<()> {
 }
 
 async fn summarize(data: web::Json<Req>) -> impl Responder {
-    let (src, _abs, n) = (
-        data.src.as_str(),
-        data.abs.as_str(),
-        data.n.parse().unwrap(),
-    );
-    let summary = cyan_nlg::summarize(src).await;
-    let abs = &summary.unwrap();
+    let (src, _abs, n) = parse(&data);
+    // TODO: maybe add join! macro here?
+    let abs = &cyan_nlg::summarize(src).await.unwrap();
     set_and_respond(src, abs, n).await
 }
 
 async fn calculate(data: web::Json<Req>) -> impl Responder {
-    let (src, abs, n) = (
-        data.src.as_str(),
-        data.abs.as_str(),
-        data.n.parse().unwrap(),
-    );
+    let (src, abs, n) = parse(&data);
     set_and_respond(src, abs, n).await
 }
 
@@ -91,8 +83,8 @@ async fn set(src: &str, abs: &str, n: usize) -> String {
     ) {
         Ok(v) => v,
         Err(_) => (
-            vec![String::new()],
-            vec![String::new()],
+            vec![(String::new(), 0)],
+            vec![(String::new(), 0)],
             vec![String::new()],
             vec![String::new()],
         ),
@@ -110,4 +102,12 @@ async fn set(src: &str, abs: &str, n: usize) -> String {
 fn respond(resp: &Resp) -> impl Responder {
     let json = serde_json::to_string(resp).unwrap();
     HttpResponse::Ok().body(json)
+}
+
+fn parse(data: &web::Json<Req>) -> (&str, &str, usize) {
+    (
+        data.src.as_str(),
+        data.abs.as_str(),
+        data.n.parse().unwrap(),
+    )
 }

@@ -42,7 +42,10 @@ async function calculate() {
         document.getElementById("text_output").value.length === 0) {
         return;
     }
+
+    document.getElementById("loading").style.display = "inline";
     await post("calculate");
+    document.getElementById("loading").style.display = "none";
 }
 
 function reset() {
@@ -110,7 +113,7 @@ function setFields(resp) {
     document.getElementById("abstract_n_gram").src = "../static/img/ng_abs.png?" + Math.random();
 
     // Set Frequency Values
-    document.getElementById("pos_frequency").src = "../static/img/freq.png";
+    document.getElementById("pos_frequency").src = "../static/img/freq.png?" + Math.random();
 }
 
 function view_disabled() {

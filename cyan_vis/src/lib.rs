@@ -1,13 +1,16 @@
+mod freq;
 mod ngram;
+
 use futures::join;
 use tokio::task::spawn_blocking;
 
 pub(crate) const NGRAM_FIELD_LENGTH: u32 = 10;
 
-pub async fn plot_freq(src: &Vec<String>, abs: &Vec<String>) {
+pub async fn plot_freq(src: &Vec<(String, u32)>, abs: &Vec<(String, u32)>) {
+    let s = src.to_owned();
+    let a = abs.to_owned();
     spawn_blocking(move || {
-        // 1: calculate POS for src, abs
-        // 2: graph
+        freq::plot(&s, &a);
     })
         .await
         .unwrap();

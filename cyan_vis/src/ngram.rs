@@ -1,25 +1,9 @@
+use cyan_nlg::utils::map_to_sorted_vec;
 use plotters::prelude::{*, SegmentValue};
-use std::cmp::Ordering;
 use std::collections::HashMap;
 
 const BGC: RGBColor = RGBColor(251, 241, 199);
 const WHT: RGBColor = RGBColor(60, 56, 54);
-
-pub(crate) fn get_top_n(text: Vec<String>, n: u32) -> Vec<(String, u32)> {
-    let mut map: HashMap<String, u32> = HashMap::new();
-    for n_gram in text.to_owned().iter() {
-        *map.entry(n_gram.to_string()).or_insert(0) += 1;
-    };
-
-    let mut sorted: Vec<(String, u32)> = map.into_iter().collect();
-    sorted.sort_by(|a, b| match a.1.cmp(&b.1).reverse() {
-        Ordering::Equal => a.0.cmp(&b.0),
-        v => v,
-    });
-    sorted.resize_with(n as usize, || { (String::new(), 0) });
-    sorted.reverse();
-    sorted
-}
 
 pub(crate) fn plot(name: &'static str, data: &Vec<(String, u32)>) {
     let file = &format!("cyan_api/web/static/img/{}.png", name);
@@ -60,13 +44,24 @@ pub(crate) fn plot(name: &'static str, data: &Vec<(String, u32)>) {
 
     chart.draw_series((1..).zip(data.iter()).map(|(y, (_, x))| {
         let mut bar = Rectangle::new([
-                                         (0, SegmentValue::Exact(y)),
-                                         (*x, SegmentValue::Exact(y + 1))
-                                     ], RED.mix(0.5).filled());
+            (0, SegmentValue::Exact(y)),
+            (*x, SegmentValue::Exact(y + 1))
+        ], RED.mix(0.5).filled());
         bar.set_margin(5, 5, 0, 0);
         bar
-    }))
-        .unwrap();
+    })).unwrap();
 
     root.present().expect("Directory not found");
+}
+
+pub(crate) fn get_top_n(text: Vec<String>, n: u32) -> Vec<(String, u32)> {
+    let mut map: HashMap<String, u32> = HashMap::new();
+    for n_gram in text.to_owned().iter() {
+        *map.entry(n_gram.to_string()).or_insert(0) += 1;
+    };
+
+    let mut sorted = map_to_sorted_vec(map);
+    sorted.resize_with(n as usize, || { (String::new(), 0) });
+    sorted.reverse();
+    sorted
 }
