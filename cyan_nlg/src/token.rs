@@ -17,7 +17,5 @@ pub(crate) fn from(text: &str) -> Vec<(String, u32)> {
         *map.entry(tag.label.to_string()).or_insert(0) += 1;
     };
 
-    let res = map_to_sorted_vec(map);
-    println!("{}: {:?}", res.len(), res);
-    res
+    map_to_sorted_vec(map)
 }

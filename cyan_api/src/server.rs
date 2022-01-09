@@ -1,7 +1,7 @@
 use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use cyan_nlg;
-use cyan_vis;
+use cyan_vis::{plot_ngram, plot_token, utils::TextSource};
 use futures::{join, try_join};
 use std::io::Result;
 use serde::{Deserialize, Serialize};
@@ -91,9 +91,9 @@ async fn set(src: &str, abs: &str, n: usize) -> String {
     };
 
     join!(
-        cyan_vis::plot_freq(&src_pos, &abs_pos),
-        cyan_vis::plot_ngrams("ng_src", &src_ngrams),
-        cyan_vis::plot_ngrams("ng_abs", &abs_ngrams),
+        plot_ngram(TextSource::SRC, &src_ngrams),
+        plot_ngram(TextSource::ABS, &abs_ngrams),
+        plot_token(&src_pos, &abs_pos),
     );
 
     cyan_nlg::bleu(&src_ngrams, &abs_ngrams)

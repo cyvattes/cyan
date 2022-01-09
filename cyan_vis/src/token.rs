@@ -1,15 +1,11 @@
+use crate::utils;
 use std::cmp;
 use plotters::prelude::*;
-
-const BGC: RGBColor = RGBColor(251, 241, 199);
-const WHT: RGBColor = RGBColor(60, 56, 54);
-const BLU: RGBColor = RGBColor(69, 133, 136);
-const PPL: RGBColor = RGBColor(177, 98, 134);
 
 pub(crate) fn plot(src: &Vec<(String, u32)>, abs: &Vec<(String, u32)>) {
     let file = "cyan_api/web/static/img/freq.png";
     let root = BitMapBackend::new(file, (608, 288)).into_drawing_area();
-    root.fill(&BGC).unwrap();
+    root.fill(&utils::BGC).unwrap();
 
     let len = cmp::max(src.len(), abs.len()) as u32;
     let max = cmp::max(src[0].1, abs[0].1) as u32;
@@ -31,7 +27,7 @@ pub(crate) fn plot(src: &Vec<(String, u32)>, abs: &Vec<(String, u32)>) {
     chart
         .configure_mesh()
         .disable_x_mesh()
-        .bold_line_style(&WHT.mix(0.3))
+        .bold_line_style(&utils::BLK.mix(0.3))
         .y_desc("Count")
         .x_labels(len as usize)
         .x_label_formatter(&|sv| {
@@ -46,15 +42,27 @@ pub(crate) fn plot(src: &Vec<(String, u32)>, abs: &Vec<(String, u32)>) {
         .draw()
         .unwrap();
 
-    let mut x: u32 = 0;
-    chart.draw_series(
-        Histogram::vertical(&chart)
-            .style(BLU.mix(0.5).filled())
-            .data(src.iter().map(|(_, y)| {
-                x += 1;
-                (x, *y)
-            })),
-    ).unwrap();
+    let src_color = utils::TextSource::SRC.color();
+    let left = (1..).zip(src.iter())
+        .map(|(x, (_, y))| utils::rectangle(x, *y, true, src_color));
+    chart.draw_series(left)
+        .unwrap()
+        .label("SRC")
+        .legend(move |(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], src_color));
+
+    let abs_color = utils::TextSource::ABS.color();
+    let right = (1..).zip(abs.iter())
+        .map(|(x, (_, y))| utils::rectangle(x, *y, false, abs_color));
+    chart.draw_series(right)
+        .unwrap()
+        .label("ABS")
+        .legend(move |(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], abs_color));
+
+    chart.configure_series_labels()
+        .border_style(&utils::FGC)
+        .background_style(&utils::WHT.mix(0.8))
+        .draw()
+        .unwrap();
 
     root.present().expect("Directory not found");
 }

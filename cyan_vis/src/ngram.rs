@@ -1,12 +1,11 @@
+use crate::utils;
 use cyan_nlg::utils::map_to_sorted_vec;
+use crate::utils::*;
 use plotters::prelude::{*, SegmentValue};
 use std::collections::HashMap;
 
-const BGC: RGBColor = RGBColor(251, 241, 199);
-const WHT: RGBColor = RGBColor(60, 56, 54);
-
-pub(crate) fn plot(name: &'static str, data: &Vec<(String, u32)>) {
-    let file = &format!("cyan_api/web/static/img/{}.png", name);
+pub(crate) fn plot(ts: utils::TextSource, data: &Vec<(String, u32)>) {
+    let file = ts.file();
     let root = BitMapBackend::new(file, (288, 288)).into_drawing_area();
     root.fill(&BGC).unwrap();
 
@@ -16,25 +15,24 @@ pub(crate) fn plot(name: &'static str, data: &Vec<(String, u32)>) {
     let margin: u32 = (30 * t.len() as u32) + 10;
 
     let mut chart = ChartBuilder::on(&root)
-        .x_label_area_size(35)
+        .x_label_area_size(20)
         .y_label_area_size(margin)
         .margin(5)
         .build_cartesian_2d(
             0u32..data.last().unwrap().1 + 1,
-            (1u32..crate::NGRAM_FIELD_LENGTH).into_segmented(),
+            (1u32..utils::NGRAM_FIELD_LENGTH).into_segmented(),
         )
         .unwrap();
 
     chart
         .configure_mesh()
         .disable_y_mesh()
-        .bold_line_style(&WHT.mix(0.3))
-        .x_desc("Count")
+        .bold_line_style(&utils::BLK.mix(0.3))
         .y_label_formatter(&|sv| {
             let i: usize = match sv {
                 SegmentValue::Exact(val) => *val,
                 SegmentValue::CenterOf(val) => *val,
-                _ => crate::NGRAM_FIELD_LENGTH,
+                _ => utils::NGRAM_FIELD_LENGTH,
             } as usize;
             format!("{:?}", data[i-1].0)
         })
@@ -46,7 +44,7 @@ pub(crate) fn plot(name: &'static str, data: &Vec<(String, u32)>) {
         let mut bar = Rectangle::new([
             (0, SegmentValue::Exact(y)),
             (*x, SegmentValue::Exact(y + 1))
-        ], RED.mix(0.5).filled());
+        ], ts.color().mix(0.8).filled());
         bar.set_margin(5, 5, 0, 0);
         bar
     })).unwrap();
