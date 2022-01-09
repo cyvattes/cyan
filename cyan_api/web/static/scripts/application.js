@@ -43,9 +43,7 @@ async function calculate() {
         return;
     }
 
-    document.getElementById("loading").style.display = "inline";
     await post("calculate");
-    document.getElementById("loading").style.display = "none";
 }
 
 function reset() {

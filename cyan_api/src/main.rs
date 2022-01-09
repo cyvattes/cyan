@@ -1,4 +1,5 @@
 mod server;
+mod utils;
 
 use actix_web;
 use std::io::Result;
