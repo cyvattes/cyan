@@ -2,7 +2,7 @@ use actix_files::Files;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use cyan_nlg;
 use cyan_vis;
-use futures::try_join;
+use futures::{join, try_join};
 use std::io::Result;
 use serde::{Deserialize, Serialize};
 
@@ -51,7 +51,7 @@ async fn summarize(data: web::Json<Req>) -> impl Responder {
         data.n.parse().unwrap(),
     );
     let summary = cyan_nlg::summarize(src).await;
-    let abs = summary.as_str();
+    let abs = &summary.unwrap();
     set_and_respond(src, abs, n).await
 }
 
@@ -75,19 +75,36 @@ async fn set_and_respond(src: &str, abs: &str, n: usize) -> impl Responder {
 }
 
 async fn set(src: &str, abs: &str, n: usize) -> String {
-    let (src_ngram, abs_ngram) = match try_join!(
-        cyan_nlg::tokenize(src, n),
-        cyan_nlg::tokenize(abs, n),
+    let src = cyan_nlg::strip(src);
+    let abs = cyan_nlg::strip(abs);
+
+    let (
+        src_pos,
+        abs_pos,
+        src_ngrams,
+        abs_ngrams,
+    ) = match try_join!(
+        cyan_nlg::tokenize(&src),
+        cyan_nlg::tokenize(&abs),
+        cyan_nlg::ngramize(&src, n),
+        cyan_nlg::ngramize(&abs, n),
     ) {
         Ok(v) => v,
         Err(_) => (
             vec![String::new()],
             vec![String::new()],
+            vec![String::new()],
+            vec![String::new()],
         ),
     };
 
-    cyan_vis::plot(&src_ngram, &abs_ngram).await;
-    cyan_nlg::bleu(&src_ngram, &abs_ngram)
+    join!(
+        cyan_vis::plot_freq(&src_pos, &abs_pos),
+        cyan_vis::plot_ngrams("ng_src", &src_ngrams),
+        cyan_vis::plot_ngrams("ng_abs", &abs_ngrams),
+    );
+
+    cyan_nlg::bleu(&src_ngrams, &abs_ngrams)
 }
 
 fn respond(resp: &Resp) -> impl Responder {
