@@ -18,7 +18,6 @@ pub(crate) fn plot(src: &Vec<(String, u32)>, abs: &Vec<(String, u32)>) {
         false => abs.clone(),
     };
 
-    println!("{:?}, {:?}", len, max);
     let mut chart = ChartBuilder::on(&root)
         .x_label_area_size(35)
         .y_label_area_size(35)
@@ -34,8 +33,8 @@ pub(crate) fn plot(src: &Vec<(String, u32)>, abs: &Vec<(String, u32)>) {
         .disable_x_mesh()
         .bold_line_style(&WHT.mix(0.3))
         .y_desc("Count")
+        .x_labels(len as usize)
         .x_label_formatter(&|sv| {
-            println!("{:?}", sv);
             let i: usize = match sv {
                 SegmentValue::Exact(val) => *val,
                 SegmentValue::CenterOf(val) => *val,
@@ -56,14 +55,6 @@ pub(crate) fn plot(src: &Vec<(String, u32)>, abs: &Vec<(String, u32)>) {
                 (x, *y)
             })),
     ).unwrap();
-    // chart.draw_series((1..).zip(src.iter()).map(|(x, (_, y))| {
-    //     let mut bar = Rectangle::new([
-    //         (SegmentValue::Exact(x), 0),
-    //         (SegmentValue::Exact(x+1), *y),
-    //     ], BLU.mix(0.5).filled());
-    //     bar.set_margin(5, 5, 0, 0);
-    //     bar
-    // })).unwrap();
 
     root.present().expect("Directory not found");
 }
