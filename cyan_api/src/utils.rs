@@ -1,5 +1,5 @@
 use actix_web::{web, HttpResponse, Responder};
-use cyan_nlg::{utils::Config};
+use cyan_nlg::{utils::Config, rouge::Rouge};
 use cyan_vis::{self, utils::TextSource};
 use futures::{join, try_join};
 use serde::{Deserialize, Serialize};
@@ -15,7 +15,7 @@ pub(crate) struct Req {
 struct Resp {
     abs: String,
     bleu: String,
-    rouge: String,
+    rouge: Rouge,
 }
 
 pub(crate) fn parse(data: &web::Json<Req>) -> (&str, &str, usize) {
@@ -26,21 +26,21 @@ pub(crate) fn parse(data: &web::Json<Req>) -> (&str, &str, usize) {
     )
 }
 
-pub(crate) fn respond(abs: String, bleu: String) -> impl Responder {
+pub(crate) fn respond(abs: String, bleu: String, rouge: Rouge) -> impl Responder {
     let resp = Resp {
         abs,
         bleu,
-        rouge: String::new(),
+        rouge,
     };
     let json = serde_json::to_string(&resp).unwrap();
     HttpResponse::Ok().body(json)
 }
 
-pub(crate) async fn join_abstract(src: &str) -> String {
+pub(crate) async fn join_abstract(src: &str) -> (String, String, String) {
     let (
-        abs,
-        _,
-        _,
+        abs1,
+        abs2,
+        abs3,
     ) = match try_join!(
         cyan_nlg::summarize(src, Config::BART),
         cyan_nlg::summarize(src, Config::T5GN),
@@ -54,7 +54,11 @@ pub(crate) async fn join_abstract(src: &str) -> String {
         ),
     };
 
-    abs
+    (abs1, abs2, abs3)
+}
+
+pub(crate) async fn join_reference(abs: &str, ref1: &str, ref2: &str, ref3: &str) -> Rouge {
+    Rouge::from(abs, ref1, ref2, ref3).await
 }
 
 pub(crate) async fn plot_ngram(src: &str, abs: &str, n: usize) -> String {

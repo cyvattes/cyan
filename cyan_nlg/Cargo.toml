@@ -6,6 +6,7 @@ license = "GPL-3.0-or-later"
 authors = ["CK Vattes <cvatte1@wgu.edu>"]
 
 [dependencies]
+futures = "0.3.19"
 rust-bert = "0.16.0"
 serde = "1.0.132"
 serde_json = "1.0.73"

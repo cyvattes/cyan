@@ -4,6 +4,7 @@ mod summary;
 mod token;
 mod tokenizer;
 pub mod utils;
+pub mod rouge;
 
 use std::error::Error;
 use tokio::task::spawn_blocking;
