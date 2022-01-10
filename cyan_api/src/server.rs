@@ -1,7 +1,6 @@
 use actix_files::Files;
 use actix_web::{web, App, HttpServer, Responder};
 use crate::utils::{parse, respond, join_abstract, plot_ngram, plot_token, Req};
-use cyan_nlg;
 use std::io::Result;
 
 pub(crate) async fn run() -> Result<()> {

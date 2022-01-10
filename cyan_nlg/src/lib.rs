@@ -7,6 +7,7 @@ pub mod utils;
 
 use std::error::Error;
 use tokio::task::spawn_blocking;
+use utils::Config;
 
 type StrHandle = Result<String, Box<dyn Error>>;
 type VecHandle = Result<Vec<String>, Box<dyn Error>>;
@@ -20,13 +21,10 @@ pub fn strip(text: &str) -> String {
     t
 }
 
-pub async fn summarize(text: &str) -> StrHandle {
-    // TODO: Summarizer is sharing resources, forcing
-    //  threads to be run concurrently, but not
-    //  in parallel. Need to see if we can fix this.
+pub async fn summarize(text: &str, config: Config) -> StrHandle {
     let t = text.to_string();
-    let r = tokio::task::spawn_blocking(move || {
-        summary::from(&t)
+    let r = spawn_blocking(move || {
+        summary::from(&t, config)
     })
         .await
         .expect("Thread panicked");
@@ -36,7 +34,6 @@ pub async fn summarize(text: &str) -> StrHandle {
 pub async fn tokenize(text: &str) -> TupHandle {
     let t = text.to_string();
     let r =  tokio::task::spawn_blocking(move || {
-        // return vector of POS tokens
         token::from(&t)
     })
         .await

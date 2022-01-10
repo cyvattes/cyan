@@ -1,4 +1,5 @@
 use actix_web::{web, HttpResponse, Responder};
+use cyan_nlg::{utils::Config};
 use cyan_vis::{self, utils::TextSource};
 use futures::{join, try_join};
 use serde::{Deserialize, Serialize};
@@ -9,7 +10,6 @@ pub(crate) struct Req {
     abs: String,
     n: String,
 }
-
 
 #[derive(Serialize)]
 struct Resp {
@@ -37,14 +37,19 @@ pub(crate) fn respond(abs: String, bleu: String) -> impl Responder {
 }
 
 pub(crate) async fn join_abstract(src: &str) -> String {
-    // TODO: maybe add join! macro here?
     let (
         abs,
+        _,
+        _,
     ) = match try_join!(
-        cyan_nlg::summarize(src)
+        cyan_nlg::summarize(src, Config::BART),
+        cyan_nlg::summarize(src, Config::T5GN),
+        cyan_nlg::summarize(src, Config::PNET),
     ) {
         Ok(v) => v,
         Err(_) => (
+            String::new(),
+            String::new(),
             String::new(),
         ),
     };
