@@ -104,7 +104,7 @@ function setFields(resp) {
     document.getElementById("reduction_percent").textContent = red.toFixed(2).toString();
 
     // Set BLEU % values
-    document.getElementById("bleu_score").textContent = data.bleu;
+    document.getElementById("bleu_score").textContent = data.bleu.score;
 
     // Set N-Gram Comparison Values
     document.getElementById("source_n_gram").src = "../static/img/ng_src.png?" + Math.random();
