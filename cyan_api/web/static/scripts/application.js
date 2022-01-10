@@ -103,8 +103,14 @@ function setFields(resp) {
     document.getElementById("abstract_count").textContent = String(abs);
     document.getElementById("reduction_percent").textContent = red.toFixed(2).toString();
 
-    // Set BLEU % values
+    // Set BLEU score
     document.getElementById("bleu_score").textContent = data.bleu.score;
+
+    // Set ROUGE score
+    if (data.rouge.f1.length > 0) {
+        document.getElementById("rouge_score").textContent = data.rouge.f1;
+        document.getElementById("rouge_heatmaps").src = "../static/img/freq.png?" + Math.random();
+    }
 
     // Set N-Gram Comparison Values
     document.getElementById("source_n_gram").src = "../static/img/ng_src.png?" + Math.random();
@@ -117,11 +123,13 @@ function setFields(resp) {
 function view_disabled() {
     document.getElementById("bleu").classList.remove("disabled");
     document.getElementById("top_n_grams").classList.remove("disabled");
+    document.getElementById("rouge").classList.remove("disabled");
     document.getElementById("freq").classList.remove("disabled");
 }
 
 function hide_disabled() {
     document.getElementById("bleu").classList.add("disabled");
     document.getElementById("top_n_grams").classList.add("disabled");
+    document.getElementById("rouge").classList.add("disabled");
     document.getElementById("freq").classList.add("disabled");
 }

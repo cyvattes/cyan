@@ -34,6 +34,7 @@ pub(crate) fn respond(abs: String, bleu: Bleu, rouge: Rouge) -> impl Responder {
         rouge,
     };
     let json = serde_json::to_string(&resp).unwrap();
+    println!("{:?}", json);
     HttpResponse::Ok().body(json)
 }
 

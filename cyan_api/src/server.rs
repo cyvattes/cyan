@@ -33,7 +33,7 @@ async fn summarize(data: web::Json<Req>) -> impl Responder {
     let (abs, ref2, ref3) = join_abstract(src).await;
     let bleu = plot_ngram(src, &abs, n).await;
     let rouge = join_reference(&abs, src, &ref2, &ref3).await;
-    println!("{:?}", rouge);
+    println!("{:?}\n{:?}", bleu, rouge);
     plot_token(src, &abs).await;
     respond(abs.to_string(), bleu, rouge)
 }

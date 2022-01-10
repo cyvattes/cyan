@@ -100,15 +100,11 @@ textarea::placeholder {
     font-size: 1rem;
 }
 
-.bleu {
+.bleu, .rouge {
     position: relative;
 }
 
-#bleu_score_header {
-    display: block;
-}
-
-#frequency_header {
+#rouge_header, #bleu_header, #freq_header {
     display: block;
 }
 
