@@ -6,7 +6,6 @@ mod token;
 mod tokenizer;
 pub mod utils;
 
-use crate::{bleu::Bleu, rouge::Rouge};
 use std::error::Error;
 use tokio::task::spawn_blocking;
 use utils::Config;
@@ -76,10 +75,10 @@ pub async fn precision(abs: &Vec<String>, rf: &Vec<String>) -> F32Handle {
     Ok(r)
 }
 
-pub fn bleu(src: &Vec<String>, abs: &Vec<String>) -> Bleu {
-    Bleu::from(src, abs)
+pub fn bleu(src: &Vec<String>, abs: &Vec<String>) -> f32 {
+    bleu::from(src, abs)
 }
 
-pub fn rouge(recall: f32, precision: f32) -> Rouge {
-    Rouge::from(recall, precision)
+pub fn rouge(recall: f32, precision: f32) -> f32 {
+    rouge::from(recall, precision)
 }

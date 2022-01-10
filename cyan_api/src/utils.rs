@@ -1,9 +1,8 @@
 use actix_web::{web, HttpResponse, Responder};
-use cyan_nlg::{bleu::Bleu, rouge::Rouge, utils::Config};
+use cyan_nlg::utils::Config;
 use cyan_vis::{self, utils::TextSource};
 use futures::{join, try_join};
 use serde::{Deserialize, Serialize};
-use std::time::Instant;
 
 #[derive(Deserialize)]
 pub(crate) struct Req {
@@ -15,8 +14,8 @@ pub(crate) struct Req {
 #[derive(Serialize)]
 struct Resp {
     abs: String,
-    bleu: Bleu,
-    rouge: Rouge,
+    bleu: String,
+    rouge: String,
 }
 
 pub(crate) fn parse(data: &web::Json<Req>) -> (&str, &str, usize) {
@@ -27,14 +26,13 @@ pub(crate) fn parse(data: &web::Json<Req>) -> (&str, &str, usize) {
     )
 }
 
-pub(crate) fn respond(abs: String, bleu: Bleu, rouge: Rouge) -> impl Responder {
+pub(crate) fn respond(abs: String, bleu: String, rouge: String) -> impl Responder {
     let resp = Resp {
         abs,
         bleu,
         rouge,
     };
     let json = serde_json::to_string(&resp).unwrap();
-    println!("{:?}", json);
     HttpResponse::Ok().body(json)
 }
 
@@ -59,9 +57,34 @@ pub(crate) async fn join_abstract(src: &str) -> (String, String, String) {
     (abs1, abs2, abs3)
 }
 
-pub(crate) async fn join_reference(abs: &str, ref1: &str, ref2: &str, ref3: &str) -> Rouge {
-    let t = Instant::now();
-    println!("ROUGE started");
+pub(crate) async fn plot_ngram(src: &str, abs: &str, n: usize) -> String {
+    let src = cyan_nlg::strip(src);
+    let abs = cyan_nlg::strip(abs);
+
+    let (
+        src_ngrams,
+        abs_ngrams,
+    ) = match try_join!(
+        cyan_nlg::ngramize(&src, n),
+        cyan_nlg::ngramize(&abs, n),
+    ) {
+        Ok(v) => v,
+        Err(_) => (
+            vec![String::new()],
+            vec![String::new()],
+        ),
+    };
+
+    join!(
+        cyan_vis::plot_ngram(TextSource::SRC, &src_ngrams),
+        cyan_vis::plot_ngram(TextSource::ABS, &abs_ngrams),
+    );
+
+    let bleu = cyan_nlg::bleu(&src_ngrams, &abs_ngrams);
+    format!("{:.3}%", bleu)
+}
+
+pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) -> String {
     let abs = cyan_nlg::strip(abs);
     let ref1 = cyan_nlg::strip(ref1);
     let ref2 = cyan_nlg::strip(ref2);
@@ -110,34 +133,9 @@ pub(crate) async fn join_reference(abs: &str, ref1: &str, ref2: &str, ref3: &str
     };
     recall /= 4.0;
     precision /= 4.0;
-    println!("ROUGE finished in {:?}", t.elapsed());
-    cyan_nlg::rouge(recall, precision)
-}
-
-pub(crate) async fn plot_ngram(src: &str, abs: &str, n: usize) -> Bleu {
-    let src = cyan_nlg::strip(src);
-    let abs = cyan_nlg::strip(abs);
-
-    let (
-        src_ngrams,
-        abs_ngrams,
-    ) = match try_join!(
-        cyan_nlg::ngramize(&src, n),
-        cyan_nlg::ngramize(&abs, n),
-    ) {
-        Ok(v) => v,
-        Err(_) => (
-            vec![String::new()],
-            vec![String::new()],
-        ),
-    };
-
-    join!(
-        cyan_vis::plot_ngram(TextSource::SRC, &src_ngrams),
-        cyan_vis::plot_ngram(TextSource::ABS, &abs_ngrams),
-    );
-
-    cyan_nlg::bleu(&src_ngrams, &abs_ngrams)
+    let rouge = cyan_nlg::rouge(recall, precision);
+    // TODO: plot rouge
+    format!("{:.3}%", rouge)
 }
 
 pub(crate) async fn plot_token(src: &str, abs: &str) {

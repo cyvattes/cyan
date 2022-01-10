@@ -1,17 +1,6 @@
 use std::collections::HashMap;
-use serde::Serialize;
-
-#[derive(Debug, Serialize)]
-pub struct Bleu {
-    score: String,
-}
-
-impl Bleu {
-    pub(crate) fn from(src: &Vec<String>, abs: &Vec<String>) -> Bleu {
-        Bleu {
-            score: format!("{:.3}%", strict_bleu(src, abs)),
-        }
-    }
+pub(crate) fn from(src: &Vec<String>, abs: &Vec<String>) -> f32 {
+    strict_bleu(src, abs)
 }
 
 fn strict_bleu(src: &Vec<String>, abs: &Vec<String>) -> f32 {

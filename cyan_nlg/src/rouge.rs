@@ -1,29 +1,6 @@
 use crate::bleu::naive_bleu;
-use serde::Serialize;
-
-#[derive(Debug, Serialize)]
-pub struct Rouge {
-    recall: String,
-    precision: String,
-    f1: String,
-}
-
-impl Rouge {
-    pub fn new() -> Rouge {
-        Rouge {
-            recall: String::new(),
-            precision: String::new(),
-            f1: String::new(),
-        }
-    }
-
-    pub(crate) fn from(recall: f32, precision: f32) -> Rouge {
-        Rouge {
-            recall: recall.to_string(),
-            precision: precision.to_string(),
-            f1: format!("{:.3}%", f1(recall, precision)),
-        }
-    }
+pub(crate) fn from(recall: f32, precision: f32) -> f32 {
+    f1(recall, precision)
 }
 
 pub(crate) fn recall(abs: &Vec<String>, rf: &Vec<String>) -> f32 {
@@ -36,7 +13,7 @@ pub(crate) fn precision(abs: &Vec<String>, rf: &Vec<String>) -> f32 {
     naive_bleu(abs, rf, w)
 }
 
-pub fn f1(recall: f32, precision: f32) -> f32 {
+fn f1(recall: f32, precision: f32) -> f32 {
     if (precision + recall) == 0.0 {
         return 0.0;
     }
