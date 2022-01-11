@@ -10,8 +10,6 @@ pub(crate) const BLK: RGBColor = RGBColor(60, 56, 54);
 pub(crate) const BLU: RGBColor = RGBColor(69, 133, 136);
 pub(crate) const RED: RGBColor = RGBColor(204, 36, 29);
 
-pub(crate) const BGC_HSL: HSLColor = HSLColor(0.13, 0.87, 0.88);
-
 pub enum TextSource {
     SRC,
     ABS,
