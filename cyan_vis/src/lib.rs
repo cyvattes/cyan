@@ -16,7 +16,7 @@ pub async fn plot_ngram(ts: TextSource, text: &Vec<String>) {
         .unwrap();
 }
 
-pub async fn plot_rouge(matrix: [[[f32; 4]; 3]; 4]) {
+pub async fn plot_rouge(matrix: [[[f32; 4]; 3]; 3]) {
     // Needs src, ref1, ref2 for N in 1..=4 per ROUGE plot
     // x4 ROUGE plots: recall, precision, multiply, addition
     // On single image?

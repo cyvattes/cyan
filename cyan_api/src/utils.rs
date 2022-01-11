@@ -90,8 +90,8 @@ pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) ->
     let ref2 = cyan_nlg::strip(ref2);
     let ref3 = cyan_nlg::strip(ref3);
 
-    let mut f1: f32 = 0.0;
-    let mut matrix = [[[0.0 as f32; 4]; 3]; 4];
+    let mut f1_total: f32 = 0.0;
+    let mut matrix = [[[0.0 as f32; 4]; 3]; 3];
     for n in 1..=4 {
         let (
             abs_ngrams,
@@ -152,16 +152,17 @@ pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) ->
         // multiply[ref1..=ref3][n1..=n4]
         // addition[ref1..=ref3][n1..=n4]
         for r in 0..=2 {
-            let recall = matrix[0][r][n-1];
-            let precision = matrix[1][r][n-1];
-            matrix[2][r][n-1] = recall * precision;
-            matrix[3][r][n-1] = recall + precision;
-            f1 += cyan_nlg::rouge(recall, precision);
+            let f1 = cyan_nlg::rouge(
+                matrix[0][r][n-1],
+                matrix[1][r][n-1]
+            );
+            matrix[2][r][n-1] = f1;
+            f1_total += f1;
         }
 
     };
 
-    let rouge = f1 / 12.0; // sum of ROUGE on 3 REF and N(1..=4)
+    let rouge = f1_total / 12.0; // sum of ROUGE on 3 REF and N(1..=4)
     cyan_vis::plot_rouge(matrix).await;
     format!("{:.3}%", rouge)
 }

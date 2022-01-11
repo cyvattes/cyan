@@ -1,23 +1,21 @@
 use crate::utils;
 use plotters::prelude::*;
 
-pub(crate) fn plot(matrix: [[[f32; 4]; 3]; 4]) {
+pub(crate) fn plot(matrix: [[[f32; 4]; 3]; 3]) {
     let file = "cyan_api/web/static/img/rouge.png";
     let root = BitMapBackend::new(file, (688, 576)).into_drawing_area();
     root.fill(&utils::BGC).unwrap();
 
     println!("{:?}", matrix);
     let (upper, lower) = root.split_vertically(288);
-    let (ul, ur) = upper.split_horizontally(344);
     let (ll, lr) = lower.split_horizontally(344);
     let panels = [
-        (ul, "Recall"),
-        (ll, "Precision"),
-        (ur, "Multiplicative"),
-        (lr, "Additive"),
+        (ll, "Recall"),
+        (lr, "Precision"),
+        (upper, "F1 Means"),
     ];
 
-    for i in 0..4 {
+    for i in 0..3 {
         let mut matrix = [[0 as f32; 3]; 4];
         matrix = [
             [0.0, 0.5, 0.3],
