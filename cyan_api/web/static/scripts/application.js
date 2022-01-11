@@ -109,7 +109,7 @@ function setFields(resp) {
     // Set ROUGE score
     if (data.rouge.length > 0) {
         document.getElementById("rouge_score").textContent = data.rouge;
-        document.getElementById("rouge_heatmaps").src = "../static/img/freq.png?" + Math.random();
+        document.getElementById("rouge_heatmaps").src = "../static/img/rouge.png?" + Math.random();
     }
 
     // Set N-Gram Comparison Values

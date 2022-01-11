@@ -90,8 +90,8 @@ pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) ->
     let ref2 = cyan_nlg::strip(ref2);
     let ref3 = cyan_nlg::strip(ref3);
 
-    let mut recall: f32 = 0.0;
-    let mut precision: f32 = 0.0;
+    let mut f1: f32 = 0.0;
+    let mut matrix = [[[0.0 as f32; 4]; 3]; 4];
     for n in 1..=4 {
         let (
             abs_ngrams,
@@ -99,11 +99,11 @@ pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) ->
             ref2_ngrams,
             ref3_ngrams,
         ) = match try_join!(
-        cyan_nlg::ngramize(&abs, n),
-        cyan_nlg::ngramize(&ref1, n),
-        cyan_nlg::ngramize(&ref2, n),
-        cyan_nlg::ngramize(&ref3, n),
-    ) {
+            cyan_nlg::ngramize(&abs, n),
+            cyan_nlg::ngramize(&ref1, n),
+            cyan_nlg::ngramize(&ref2, n),
+            cyan_nlg::ngramize(&ref3, n),
+        ) {
             Ok(v) => v,
             Err(_) => (
                 vec![String::new()],
@@ -113,28 +113,56 @@ pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) ->
             ),
         };
 
-        recall += match try_join!(
+        // recall[ref1..=ref3][n1..=n4]
+        match try_join!(
             cyan_nlg::recall(&abs_ngrams, &ref1_ngrams),
             cyan_nlg::recall(&abs_ngrams, &ref2_ngrams),
             cyan_nlg::recall(&abs_ngrams, &ref3_ngrams),
         ) {
-            Ok((a, b, c)) => (a + b + c) / 3.0,
-            Err(_) => 0.0,
+            Ok((a, b, c)) => {
+                matrix[0][0][n-1] = a;
+                matrix[0][1][n-1] = b;
+                matrix[0][2][n-1] = c;
+            },
+            Err(_) => {
+                matrix[0][0][n-1] = 0.0;
+                matrix[0][1][n-1] = 0.0;
+                matrix[0][2][n-1] = 0.0;
+            },
         };
 
-        precision += match try_join!(
+        // precision[ref1..=ref3][n1..=n4]
+        match try_join!(
             cyan_nlg::precision(&abs_ngrams, &ref1_ngrams),
             cyan_nlg::precision(&abs_ngrams, &ref2_ngrams),
             cyan_nlg::precision(&abs_ngrams, &ref3_ngrams),
         ) {
-            Ok((a, b, c)) => (a + b + c) / 3.0,
-            Err(_) => 0.0,
+            Ok((a, b, c)) => {
+                matrix[1][0][n-1] = a;
+                matrix[1][1][n-1] = b;
+                matrix[1][2][n-1] = c;
+            },
+            Err(_) => {
+                matrix[1][0][n-1] = 0.0;
+                matrix[1][1][n-1] = 0.0;
+                matrix[1][2][n-1] = 0.0;
+            },
         };
+
+        // multiply[ref1..=ref3][n1..=n4]
+        // addition[ref1..=ref3][n1..=n4]
+        for r in 0..=2 {
+            let recall = matrix[0][r][n-1];
+            let precision = matrix[1][r][n-1];
+            matrix[2][r][n-1] = recall * precision;
+            matrix[3][r][n-1] = recall + precision;
+            f1 += cyan_nlg::rouge(recall, precision);
+        }
+
     };
-    recall /= 4.0;
-    precision /= 4.0;
-    let rouge = cyan_nlg::rouge(recall, precision);
-    // TODO: plot rouge
+
+    let rouge = f1 / 12.0; // sum of ROUGE on 3 REF and N(1..=4)
+    cyan_vis::plot_rouge(matrix).await;
     format!("{:.3}%", rouge)
 }
 

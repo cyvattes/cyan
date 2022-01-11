@@ -10,6 +10,8 @@ pub(crate) const BLK: RGBColor = RGBColor(60, 56, 54);
 pub(crate) const BLU: RGBColor = RGBColor(69, 133, 136);
 pub(crate) const RED: RGBColor = RGBColor(204, 36, 29);
 
+pub(crate) const BGC_HSL: HSLColor = HSLColor(0.13, 0.87, 0.88);
+
 pub enum TextSource {
     SRC,
     ABS,
@@ -42,4 +44,15 @@ pub(crate) fn rectangle(x: u32, y: u32, left: bool, color: RGBColor) -> Rectangl
         bar.set_margin(0, 0, 15, 5);
     }
     bar
+}
+
+pub(crate) fn heatbar(x: u32, y: u32, v: f32) -> Rectangle<(u32, u32)> {
+    Rectangle::new([
+        (x, y),
+        (x+1, y+1),
+    ], HSLColor(
+        0.66 - (0.66 * v as f64),
+        0.5,
+        0.5
+    ).filled())
 }
