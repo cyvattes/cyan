@@ -11,7 +11,7 @@ pub(crate) struct Req {
     n: String,
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 struct Resp {
     abs: String,
     bleu: String,
@@ -32,6 +32,7 @@ pub(crate) fn respond(abs: String, bleu: String, rouge: String) -> impl Responde
         bleu,
         rouge,
     };
+    format!("{:?}", resp);
     let json = serde_json::to_string(&resp).unwrap();
     HttpResponse::Ok().body(json)
 }
@@ -81,7 +82,7 @@ pub(crate) async fn plot_ngram(src: &str, abs: &str, n: usize) -> String {
     );
 
     let bleu = cyan_nlg::bleu(&src_ngrams, &abs_ngrams);
-    format!("{:.3}%", bleu)
+    format!("{:.3}%", bleu * 100.0)
 }
 
 pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) -> String {
@@ -91,18 +92,18 @@ pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) ->
     let ref3 = cyan_nlg::strip(ref3);
 
     let mut f1_total: f32 = 0.0;
-    let mut matrix = [[[0.0 as f32; 4]; 3]; 3];
-    for n in 1..=4 {
+    let mut matrix = [[[0.0 as f32; 3]; 4]; 3];
+    for n in 0..=3 {
         let (
             abs_ngrams,
             ref1_ngrams,
             ref2_ngrams,
             ref3_ngrams,
         ) = match try_join!(
-            cyan_nlg::ngramize(&abs, n),
-            cyan_nlg::ngramize(&ref1, n),
-            cyan_nlg::ngramize(&ref2, n),
-            cyan_nlg::ngramize(&ref3, n),
+            cyan_nlg::ngramize(&abs, n+1),
+            cyan_nlg::ngramize(&ref1, n+1),
+            cyan_nlg::ngramize(&ref2, n+1),
+            cyan_nlg::ngramize(&ref3, n+1),
         ) {
             Ok(v) => v,
             Err(_) => (
@@ -120,14 +121,14 @@ pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) ->
             cyan_nlg::recall(&abs_ngrams, &ref3_ngrams),
         ) {
             Ok((a, b, c)) => {
-                matrix[0][0][n-1] = a;
-                matrix[0][1][n-1] = b;
-                matrix[0][2][n-1] = c;
+                matrix[0][n][0]= a;
+                matrix[0][n][1]= b;
+                matrix[0][n][2]= c;
             },
             Err(_) => {
-                matrix[0][0][n-1] = 0.0;
-                matrix[0][1][n-1] = 0.0;
-                matrix[0][2][n-1] = 0.0;
+                matrix[0][n][0] = 0.0;
+                matrix[0][n][1] = 0.0;
+                matrix[0][n][2] = 0.0;
             },
         };
 
@@ -138,25 +139,24 @@ pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) ->
             cyan_nlg::precision(&abs_ngrams, &ref3_ngrams),
         ) {
             Ok((a, b, c)) => {
-                matrix[1][0][n-1] = a;
-                matrix[1][1][n-1] = b;
-                matrix[1][2][n-1] = c;
+                matrix[1][n][0] = a;
+                matrix[1][n][1] = b;
+                matrix[1][n][2] = c;
             },
             Err(_) => {
-                matrix[1][0][n-1] = 0.0;
-                matrix[1][1][n-1] = 0.0;
-                matrix[1][2][n-1] = 0.0;
+                matrix[1][n][0] = 0.0;
+                matrix[1][n][1] = 0.0;
+                matrix[1][n][2] = 0.0;
             },
         };
 
-        // multiply[ref1..=ref3][n1..=n4]
-        // addition[ref1..=ref3][n1..=n4]
+        // f1_means[ref1..=ref3][n1..=n4]
         for r in 0..=2 {
             let f1 = cyan_nlg::rouge(
-                matrix[0][r][n-1],
-                matrix[1][r][n-1]
+                matrix[0][n][r],
+                matrix[1][n][r]
             );
-            matrix[2][r][n-1] = f1;
+            matrix[2][n][r] = f1;
             f1_total += f1;
         }
 
@@ -164,7 +164,7 @@ pub(crate) async fn plot_rouge(abs: &str, ref1: &str, ref2: &str, ref3: &str) ->
 
     let rouge = f1_total / 12.0; // sum of ROUGE on 3 REF and N(1..=4)
     cyan_vis::plot_rouge(matrix).await;
-    format!("{:.3}%", rouge)
+    format!("{:.3}%", rouge * 100.0)
 }
 
 pub(crate) async fn plot_token(src: &str, abs: &str) {

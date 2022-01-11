@@ -24,7 +24,7 @@ fn strict_bleu(src: &Vec<String>, abs: &Vec<String>) -> f32 {
         }
     }
 
-    (m / w) * 100.0
+    m / w
 }
 
 pub fn naive_bleu(abs: &Vec<String>, rf: &Vec<String>, w: f32) -> f32 {
@@ -41,5 +41,5 @@ pub fn naive_bleu(abs: &Vec<String>, rf: &Vec<String>, w: f32) -> f32 {
         }
     }
 
-    (m / w) * 100.0
+    m / w
 }

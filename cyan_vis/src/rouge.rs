@@ -1,14 +1,13 @@
 use crate::utils;
 use plotters::prelude::*;
 
-pub(crate) fn plot(matrix: [[[f32; 4]; 3]; 3]) {
+pub(crate) fn plot(matrix: [[[f32; 3]; 4]; 3]) {
     let file = "cyan_api/web/static/img/rouge.png";
-    let root = BitMapBackend::new(file, (688, 576)).into_drawing_area();
+    let root = BitMapBackend::new(file, (608, 480)).into_drawing_area();
     root.fill(&utils::BGC).unwrap();
 
-    println!("{:?}", matrix);
-    let (upper, lower) = root.split_vertically(288);
-    let (ll, lr) = lower.split_horizontally(344);
+    let (upper, lower) = root.split_vertically(240);
+    let (ll, lr) = lower.split_horizontally(304);
     let panels = [
         (ll, "Recall"),
         (lr, "Precision"),
@@ -16,14 +15,6 @@ pub(crate) fn plot(matrix: [[[f32; 4]; 3]; 3]) {
     ];
 
     for i in 0..3 {
-        let mut matrix = [[0 as f32; 3]; 4];
-        matrix = [
-            [0.0, 0.5, 0.3],
-            [0.5, 0.5, 0.5],
-            [0.5, 0.5, 0.5],
-            [0.7, 0.5, 1.0],
-        ];
-
         let mut chart = ChartBuilder::on(&panels[i].0)
             .x_label_area_size(35)
             .y_label_area_size(35)
@@ -49,17 +40,37 @@ pub(crate) fn plot(matrix: [[[f32; 4]; 3]; 3]) {
             .draw()
             .unwrap();
 
-        let series = (1 as u32..)
-            .zip(matrix.iter())
-            .map(|(x, reference)| (1 as u32..)
-                .zip(reference.iter())
+        let points = (1 as u32..)
+            .zip(matrix[i].iter())
+            .map(|(x, r)| (1 as u32..)
+                .zip(r.iter())
                 .map(move |(y, v)| (x, y, v)))
-            .flatten()
-            .map(|(x, y, value)| {
-                utils::heatbar(x, y, *value)
+            .flatten();
+
+        let series = points
+            .clone()
+            .map(|(x, y, v)| {
+                utils::heatbar(x, y, *v)
             });
 
-        chart.draw_series(series)
+        chart
+            .draw_series(series)
+            .unwrap();
+
+        chart
+            .draw_series(PointSeries::of_element(
+                points.map(|(x, y, v)| (x, y, v)),
+                5,
+                ShapeStyle::from(&utils::FGC).filled(),
+                &|v, _size, _style| {
+                    EmptyElement::at((v.0, v.1))
+                    + Text::new(
+                        format!("{:.3}", v.2),
+                        (25, -35),
+                        ("sans-serif", 15)
+                    )
+                }
+            ))
             .unwrap();
     }
 
