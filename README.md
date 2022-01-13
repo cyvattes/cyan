@@ -34,7 +34,7 @@ $ cargo run cyan_api
 - Click "Submit" button to generate an abstract.
 - Experiment with different values of N to see BLEU and N-Gram calculations. These values are recalculated each time a new value for N is selected.
 - ROUGE and POS Frequencies are static: they are only calculated when the submit button is clicked.
-- Note: Text abstraction is a computationally expensive task. Generating a summary will take some time.
+- Note: Text abstraction is a computationally expensive task. Generating a summary will take some time. Additionally, the first time the abstractor is run, it will perform a background install of several language files to your machine. These files exceed 2GB, and are required for summarization.
 
 ## Program Structure
 
